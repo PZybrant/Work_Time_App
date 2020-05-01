@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Work_Time_App</string>
+    <string name="action_settings">Ustawienia</string>
+    <string name="action_history">Historia</string>
+    <string name="date_from">Od:</string>
+    <string name="date_to">Do:</string>
+    <string name="start">Start</string>
+    <string name="pause">Zapauzuj</string>
+    <string name="resume">Wznów</string>
+    <string name="stop">Zatrzymaj</string>
+    <string name="reset">Zreseruj</string>
+    <string name="apply">Akceptuj</string>
+    <string name="close">Zamknij</string>
+    <string name="hours_text">0 Godzin</string>
+    <string name="minutes_text">0 Minut</string>
+    <string name="seconds_text">0 Sekund</string>
+    <string name="set">Ustaw</string>
+</resources>
