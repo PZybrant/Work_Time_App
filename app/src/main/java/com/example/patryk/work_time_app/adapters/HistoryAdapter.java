@@ -1,7 +1,6 @@
 package com.example.patryk.work_time_app.adapters;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -21,10 +20,10 @@ import java.util.List;
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHolder> {
 
     public interface HistoryAdapterListener {
-        void onLongPressListener();
+        void onLongPressListener(long workId);
     }
 
-    private HistoryAdapterListener listener;
+    private HistoryAdapterListener mListener;
 
     private final LayoutInflater mInflater;
     private long id;
@@ -32,16 +31,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
     private Context mContext;
     private HistoryFragmentViewModel mViewModel;
 
-    public HistoryAdapter(Context context, HistoryFragmentViewModel viewModel) {
+    public HistoryAdapter(Context context, HistoryFragmentViewModel viewModel, HistoryAdapterListener listener) {
         this.mViewModel = viewModel;
+        this.mListener = listener;
         this.mContext = context;
         mInflater = LayoutInflater.from(mContext);
-
-        try {
-            listener = (HistoryAdapterListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException("No HistoryAdapterListener found!");
-        }
     }
 
     @Override
@@ -93,21 +87,24 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
         notifyDataSetChanged();
     }
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    public WorkTime getSwipedTime(int pos) {
+        return timeList.get(pos);
+    }
 
-        private long workId;
+    class MyViewHolder extends RecyclerView.ViewHolder {
 
-        public View view;
+        private long mWorkId;
+
         private TextView startDateTextView;
         private TextView stopDateTextView;
         private TextView differenceTextView;
+        private View view;
 
         private GestureDetectorCompat mDetector;
 
         private MyViewHolder(View itemView) {
             super(itemView);
             this.view = itemView;
-
             startDateTextView = view.findViewById(R.id.start_date_text_view);
             stopDateTextView = view.findViewById(R.id.stop_date_text_view);
             differenceTextView = view.findViewById(R.id.difference_text_view);
@@ -122,14 +119,17 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
         }
 
         private void setRowID(long id) {
-            this.workId = id;
+            this.mWorkId = id;
         }
 
-        class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+        public long getRowId() {
+            return this.mWorkId;
+        }
+
+        private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
             @Override
             public void onLongPress(MotionEvent event) {
-                listener.onLongPressListener();
-                itemView.setBackgroundColor(Color.LTGRAY);
+                mListener.onLongPressListener(mWorkId);
             }
         }
     }

@@ -62,7 +62,12 @@ public class WorkTimeRepository {
     }
 
     public int deleteWorkTime(WorkTime workTime) {
-        Callable<Integer> insertCallable = () -> mWorkTimeDAO.deleteWorkTime(workTime);
+        Callable<Integer> insertCallable = () -> {
+            int workTimeRowDeleted = mWorkTimeDAO.deleteWorkTime(workTime);
+            int pauseTimeRowDeleted = mPauseTimeDAO.deletePauseTimesWithWorkId(workTime.getId());
+            return workTimeRowDeleted + pauseTimeRowDeleted;
+        };
+
         int rowDeleted = 0;
 
         Future<Integer> future = WorkTimeDatabase.databaseExecutor.submit(insertCallable);
@@ -75,28 +80,6 @@ public class WorkTimeRepository {
             e2.printStackTrace();
         }
         return rowDeleted;
-    }
-
-    public int deleteWorkTime(WorkTime workTime, List<PauseTime> pauseTimes) {
-        int rowDeleted = 0;
-        Callable<Integer> insertCallable;
-        if (pauseTimes != null || !pauseTimes.isEmpty()) {
-            insertCallable = () -> mWorkTimeDAO.deleteWorkTime(workTime, pauseTimes);
-        } else {
-            insertCallable = () -> mWorkTimeDAO.deleteWorkTime(workTime);
-        }
-
-        Future<Integer> future = WorkTimeDatabase.databaseExecutor.submit(insertCallable);
-
-        try {
-            rowDeleted = future.get();
-        } catch (InterruptedException e1) {
-            e1.printStackTrace();
-        } catch (ExecutionException e2) {
-            e2.printStackTrace();
-        }
-        return rowDeleted;
-
     }
 
     public LiveData<List<WorkTime>> getAllWorkTimes() {
@@ -188,13 +171,29 @@ public class WorkTimeRepository {
         return rowDeleted;
     }
 
+    public int deletePauseTimesWithWorkId(long workId) {
+        Callable<Integer> insertCallable = () -> mPauseTimeDAO.deletePauseTimesWithWorkId(workId);
+        int rowDeleted = 0;
+
+        Future<Integer> future = WorkTimeDatabase.databaseExecutor.submit(insertCallable);
+
+        try {
+            rowDeleted = future.get();
+        } catch (InterruptedException e1) {
+            e1.printStackTrace();
+        } catch (ExecutionException e2) {
+            e2.printStackTrace();
+        }
+        return rowDeleted;
+    }
+
     public LiveData<List<PauseTime>> getAllPauseTimes() {
         this.mAllPauseTimeList = mPauseTimeDAO.getAll();
         return this.mAllPauseTimeList;
     }
 
     public List<PauseTime> getPauseTimes(long workId) {
-        Callable<List<PauseTime>> callable = () -> mPauseTimeDAO.getPauseTimesWithSpecifiedWorkId(workId);
+        Callable<List<PauseTime>> callable = () -> mPauseTimeDAO.getPauseTimesWithWorkId(workId);
         List<PauseTime> pauseTimes = null;
 
         Future<List<PauseTime>> future = WorkTimeDatabase.databaseExecutor.submit(callable);

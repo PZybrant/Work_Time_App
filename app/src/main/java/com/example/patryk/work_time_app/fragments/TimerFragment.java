@@ -161,6 +161,9 @@ public class TimerFragment extends Fragment {
         editor.putInt("hours", hoursValue);
         editor.putInt("minutes", minutesValue);
         editor.putInt("seconds", secondsValue);
+        if (isWorkFinished) {
+            stringsList.clear();
+        }
         saveList(editor);
         editor.apply();
     }

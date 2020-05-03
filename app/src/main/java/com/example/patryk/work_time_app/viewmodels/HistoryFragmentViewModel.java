@@ -14,9 +14,10 @@ import java.util.List;
 public class HistoryFragmentViewModel extends AndroidViewModel {
 
     private WorkTimeRepository repository;
+    private WorkTime mWorkTime;
     private LiveData<List<WorkTime>> mWorkTimeList;
     private LiveData<List<WorkTime>> mWorkTimeListFilterdByDate;
-    private LiveData<List<PauseTime>> pauseTimesWithWorkId;
+    private List<PauseTime> mPauseTimesWithWorkId;
 
     public HistoryFragmentViewModel(Application application) {
         super(application);
@@ -28,17 +29,23 @@ public class HistoryFragmentViewModel extends AndroidViewModel {
         return this.mWorkTimeList;
     }
 
+    public WorkTime getOneWorkTime(long id) {
+        mWorkTime = repository.getOneWorkTime(id);
+        return mWorkTime;
+    }
+
     public LiveData<List<WorkTime>> getWorkWithSpecifiedDate(String d1, String d2) {
         this.mWorkTimeListFilterdByDate = repository.getWorkWithSpecifiedDate(d1, d2);
         return this.mWorkTimeListFilterdByDate;
     }
 
     public List<PauseTime> getPauseTimesWithWorkId(long workId) {
-        return repository.getPauseTimes(workId);
+        mPauseTimesWithWorkId = repository.getPauseTimes(workId);
+        return mPauseTimesWithWorkId;
     }
 
-    public int deleteWorkTime(WorkTime workTime, List<PauseTime> pauseTimes) {
-        return repository.deleteWorkTime(workTime, pauseTimes);
+    public int deleteWorkTime(WorkTime workTime) {
+        return repository.deleteWorkTime(workTime);
     }
 
     public int deletePauseTime(PauseTime pauseTime) {

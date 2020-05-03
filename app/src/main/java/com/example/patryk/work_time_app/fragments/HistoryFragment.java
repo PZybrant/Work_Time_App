@@ -5,11 +5,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
 import androidx.appcompat.widget.AppCompatImageView;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -48,9 +50,24 @@ public class HistoryFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
-        historyAdapter = new HistoryAdapter(getContext(), viewModel);
+        historyAdapter = new HistoryAdapter(getContext(), viewModel, adapterListener);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(historyAdapter);
+
+        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                if (direction == ItemTouchHelper.LEFT) {
+                    viewModel.deleteWorkTime(historyAdapter.getSwipedTime(viewHolder.getAdapterPosition()));
+                }
+            }
+
+        }).attachToRecyclerView(recyclerView);
 
         viewModel.getWorkTimeList().observe(getViewLifecycleOwner(), list -> {
             workTimeList = list;
@@ -94,8 +111,9 @@ public class HistoryFragment extends Fragment {
         viewModel.getWorkWithSpecifiedDate(fDate, tDate).observe(getViewLifecycleOwner(), list -> historyAdapter.setTimes(list));
     }
 
-    public void onLongPressEvent(HistoryAdapter.HistoryAdapterListener listener) {
-        listener.onLongPressListener();
-    }
+    private HistoryAdapter.HistoryAdapterListener adapterListener = workId -> {
+        DetailWorkTimeDialogFragment detailWorkTimeDialogFragment = new DetailWorkTimeDialogFragment(viewModel, workId);
+        detailWorkTimeDialogFragment.show(getChildFragmentManager(), getTag());
+    };
 
 }

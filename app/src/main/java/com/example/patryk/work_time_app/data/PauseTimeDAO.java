@@ -24,11 +24,14 @@ public interface PauseTimeDAO {
     @Delete
     int deletePauseTime(PauseTime pauseTime);
 
+    @Query("DELETE FROM pauseTimes WHERE workPauseId = :workId")
+    int deletePauseTimesWithWorkId(long workId);
+
     @Query("SELECT * FROM pauseTimes")
     LiveData<List<PauseTime>> getAll();
 
     @Query("SELECT * FROM pauseTimes WHERE workPauseId = :workId")
-    List<PauseTime> getPauseTimesWithSpecifiedWorkId(long workId);
+    List<PauseTime> getPauseTimesWithWorkId(long workId);
 
     @Query("SELECT * FROM pauseTimes WHERE pauseId = :id")
     PauseTime getOne(long id);
