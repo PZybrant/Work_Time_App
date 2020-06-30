@@ -1,6 +1,7 @@
 package com.example.patryk.work_time_app.data;
 
 import android.content.Context;
+import android.support.v4.app.INotificationSideChannel;
 
 import androidx.annotation.NonNull;
 import androidx.room.Database;
@@ -13,6 +14,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Database(entities = {WorkTime.class, PauseTime.class}, version = 1, exportSchema = false)
+@TypeConverters(value = Converters.class)
 abstract class WorkTimeDatabase extends RoomDatabase {
 
     private static volatile WorkTimeDatabase INSTANCE;
@@ -25,14 +27,9 @@ abstract class WorkTimeDatabase extends RoomDatabase {
     static final ExecutorService databaseExecutor = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
     private static RoomDatabase.Callback sRoomDatabaseCallback = new RoomDatabase.Callback() {
-
         @Override
         public void onOpen(@NonNull SupportSQLiteDatabase sqLiteDatabase) {
             super.onOpen(sqLiteDatabase);
-
-//        databaseExecutor.execute(() -> {
-//
-//        });
         }
     };
 

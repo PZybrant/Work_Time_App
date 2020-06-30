@@ -12,6 +12,7 @@ import androidx.core.view.GestureDetectorCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.patryk.work_time_app.R;
+import com.example.patryk.work_time_app.Support;
 import com.example.patryk.work_time_app.data.WorkTime;
 import com.example.patryk.work_time_app.viewmodels.HistoryFragmentViewModel;
 
@@ -20,7 +21,7 @@ import java.util.List;
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHolder> {
 
     public interface HistoryAdapterListener {
-        void onLongPressListener(long workId);
+        void onLongPressListener(WorkTime mWorkTime);
     }
 
     private HistoryAdapterListener mListener;
@@ -40,37 +41,22 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.history_fragment_text_view, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_history_fragment, parent, false);
         return new MyViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
         if (timeList != null) {
-            holder.setRowID(timeList.get(position).getId());
-            holder.startDateTextView.setText(timeList.get(position).getShiftBegin());
-            holder.stopDateTextView.setText(timeList.get(position).getShiftEnd());
-
-            long timeInMilis = timeList.get(position).getWorkTime();
-            String s = (timeInMilis < 1000) ? "" : convertToString(timeInMilis);
-            holder.differenceTextView.setText(s);
+            holder.setRowID(timeList.get(position));
+            holder.startDateTextView.setText(Support.convertToString(timeList.get(position).getShiftBegin().getTime()));
+            if (timeList.get(position).isFinished()) {
+                holder.stopDateTextView.setText(Support.convertToString(timeList.get(position).getShiftEnd().getTime()));
+                long timeInMilis = timeList.get(position).getWorkTime();
+                String timeInMilisString = (timeInMilis < 1000) ? "" : Support.convertToString(timeInMilis);
+                holder.differenceTextView.setText(timeInMilisString);
+            }
         }
-    }
-
-    private String convertToString(long timeInMilis) {
-        long seconds = timeInMilis / 1000;
-
-        long minutes = seconds / 60;
-        seconds = seconds % 60;
-
-        long hours = minutes / 60;
-        minutes = minutes % 60;
-
-        String s = (seconds < 10) ? ("0" + seconds) : String.valueOf(seconds);
-        String m = (minutes < 10) ? ("0" + minutes) : String.valueOf(minutes);
-        String h = (hours < 10) ? ("0" + hours) : String.valueOf(hours);
-
-        return String.format("%s:%s:%s", h, m, s);
     }
 
     @Override
@@ -93,21 +79,21 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
 
     class MyViewHolder extends RecyclerView.ViewHolder {
 
-        private long mWorkId;
+        private WorkTime mWorkTime;
 
         private TextView startDateTextView;
+
         private TextView stopDateTextView;
         private TextView differenceTextView;
         private View view;
-
         private GestureDetectorCompat mDetector;
 
         private MyViewHolder(View itemView) {
             super(itemView);
             this.view = itemView;
-            startDateTextView = view.findViewById(R.id.start_date_text_view);
-            stopDateTextView = view.findViewById(R.id.stop_date_text_view);
-            differenceTextView = view.findViewById(R.id.difference_text_view);
+            startDateTextView = view.findViewById(R.id.item_history_tv_shift_begin);
+            stopDateTextView = view.findViewById(R.id.item_history_tv_shift_end);
+            differenceTextView = view.findViewById(R.id.item_history_tv_total);
 
 
             mDetector = new GestureDetectorCompat(mContext, new MyGestureListener());
@@ -118,18 +104,15 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
             });
         }
 
-        private void setRowID(long id) {
-            this.mWorkId = id;
-        }
-
-        public long getRowId() {
-            return this.mWorkId;
+        private void setRowID(WorkTime workTime) {
+            this.mWorkTime = workTime;
         }
 
         private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
+
             @Override
             public void onLongPress(MotionEvent event) {
-                mListener.onLongPressListener(mWorkId);
+                mListener.onLongPressListener(mWorkTime);
             }
         }
     }

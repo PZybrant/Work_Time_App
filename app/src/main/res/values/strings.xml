@@ -1,25 +1,44 @@
 <resources>
-    <string name="app_name">Work_Time_App</string>
+    <string name="app_name" translatable="false">Work_Time_App</string>
+
+    <string name="init_date" translatable="false">Date of app initialization</string>
+
+    <string name="reminder_channel_id" translatable="false">Reminder notification</string>
+    <string name="reminder_title">It\'s time to go work!</string>
+    <string name="reminder_intent_request_code" translatable="false">100</string>
+
+    <string name="action_timer">Timer</string>
     <string name="action_settings">Settings</string>
     <string name="action_history">History</string>
-    <string name="action_timer" translatable="false">Timer</string>
-    <string name="total_amount" translatable="false">Total amount:</string>
-    <string name="show_all" translatable="false">Show all</string>
-    <string name="resize" translatable="false">Resize</string>
-    <string name="date_from">From:</string>
-    <string name="date_to">To:</string>
-    <string name="set">Set</string>
-    <string name="start">Start</string>
-    <string name="pause">Pause</string>
-    <string name="resume">Resume</string>
-    <string name="stop">Stop</string>
-    <string name="reset">Reset</string>
-    <string name="apply">Apply</string>
-    <string name="close">Close</string>
-    <string name="hours_text">Hours</string>
-    <string name="minutes_text">Minutes</string>
-    <string name="seconds_text">Seconds</string>
-    <string name="my_app_shared_preferences" translatable="false">com.example.patryk.work_time_app.shared_preferences</string>
-    <string name="starting_base_value" translatable="false">Starting base value</string>
-    <string name="init_date" translatable="false">Date of app initialization</string>
+
+    <string name="dialog_detail_close">Close</string>
+    <string name="dialog_detail_close_description">Close</string>
+
+    <string name="dialog_edit_apply">Apply</string>
+    <string name="dialog_edit_apply_description">Apply</string>
+    <string name="dialog_edit_cancel">Cancel</string>
+    <string name="dialog_edit_cancel_description">Cancel</string>
+
+    <string name="dialog_filter_apply">Apply</string>
+    <string name="dialog_filter_apply_description">Apply</string>
+    <string name="dialog_filter_date_from">From:</string>
+    <string name="dialog_filter_date_to">To:</string>
+
+    <string name="edit_add_description">Add</string>
+    <string name="edit_delete_description">Delete</string>
+    <string name="edit_return_description">Return</string>
+
+    <string name="history_reset">Reset</string>
+    <string name="history_total" translatable="false">Total amount:</string>
+
+    <string name="timer_hour">Hour</string>
+    <string name="timer_hours">Hours</string>
+    <string name="timer_minute">Minute</string>
+    <string name="timer_minutes">Minutes</string>
+    <string name="timer_pause">Pause</string>
+    <string name="timer_resume">Resume</string>
+    <string name="timer_second">Second</string>
+    <string name="timer_seconds">Seconds</string>
+    <string name="timer_start">Start</string>
+    <string name="timer_stop">Stop</string>
 </resources>

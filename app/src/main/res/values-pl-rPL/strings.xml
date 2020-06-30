@@ -1,19 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Work_Time_App</string>
-    <string name="action_settings">Ustawienia</string>
+    <string name="reminder_title">Czas zacząć prace!</string>
+
     <string name="action_history">Historia</string>
-    <string name="date_from">Od:</string>
-    <string name="date_to">Do:</string>
-    <string name="start">Start</string>
-    <string name="pause">Zapauzuj</string>
-    <string name="resume">Wznów</string>
-    <string name="stop">Zatrzymaj</string>
-    <string name="reset">Zreseruj</string>
-    <string name="apply">Akceptuj</string>
-    <string name="close">Zamknij</string>
-    <string name="hours_text">0 Godzin</string>
-    <string name="minutes_text">0 Minut</string>
-    <string name="seconds_text">0 Sekund</string>
-    <string name="set">Ustaw</string>
+    <string name="action_settings">Ustawienia</string>
+    <string name="action_timer">Czsomierz</string>
+
+    <string name="dialog_filter_apply">Zastosuj</string>
+    <string name="dialog_filter_apply_description">Zastosuj</string>
+    <string name="dialog_filter_date_from">Od:</string>
+    <string name="dialog_filter_date_to">Do:</string>
+
+    <string name="dialog_detail_close">Zamknij</string>
+    <string name="dialog_detail_close_description">Zamknij</string>
+
+    <string name="dialog_edit_apply">Zastosuj</string>
+    <string name="dialog_edit_apply_description">Zastosuj</string>
+    <string name="dialog_edit_cancel">Anuluj</string>
+    <string name="dialog_edit_cancel_description">Anuluj</string>
+
+    <string name="edit_add_description">Dodaj</string>
+    <string name="edit_delete_description">Usuń</string>
+    <string name="edit_return_description">Cofnij</string>
+
+    <string name="history_reset">Zreseruj</string>
+
+    <string name="timer_start">Start</string>
+    <string name="timer_pause">Zapauzuj</string>
+    <string name="timer_resume">Wznów</string>
+    <string name="timer_stop">Zatrzymaj</string>
+    <string name="timer_hours">Godzin</string>
+    <string name="timer_hour">Godzina</string>
+    <string name="timer_minutes">Minut</string>
+    <string name="timer_minute">Minuta</string>
+    <string name="timer_seconds">Sekund</string>
+    <string name="timer_second">Sekunda</string>
+
 </resources>

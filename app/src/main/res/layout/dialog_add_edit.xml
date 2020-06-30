@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="280dp"
+    android:layout_height="wrap_content"
+    android:minWidth="280dp">
+
+    <DatePicker
+        android:id="@+id/dialog_edit_picker_date"
+        style="@style/MaterialAlertDialog.MaterialComponents.Picker.Date.Spinner"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:calendarViewShown="false"
+        android:datePickerMode="spinner"
+        android:endYear="2100"
+        android:startYear="2000"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <NumberPicker
+        android:id="@+id/dialog_edit_picker_hour"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/dialog_edit_picker_minute"
+        app:layout_constraintEnd_toStartOf="@+id/dialog_edit_picker_minute" />
+
+    <NumberPicker
+        android:id="@+id/dialog_edit_picker_minute"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toEndOf="@+id/dialog_edit_picker_date"
+        app:layout_constraintStart_toStartOf="@+id/dialog_edit_picker_date"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_edit_picker_date" />
+
+    <NumberPicker
+        android:id="@+id/dialog_edit_picker_second"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/dialog_edit_picker_minute"
+        app:layout_constraintStart_toEndOf="@+id/dialog_edit_picker_minute" />
+
+    <Button
+        android:id="@+id/dialog_edit_button_apply"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:background="@color/transparent"
+        android:minWidth="96dp"
+        android:minHeight="48dp"
+        android:text="@string/dialog_edit_apply"
+        android:contentDescription="@string/dialog_edit_apply_description"
+        android:textColor="@color/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="@+id/dialog_edit_button_cancel"
+        app:layout_constraintEnd_toEndOf="@+id/dialog_edit_picker_date"
+        app:layout_constraintTop_toTopOf="@+id/dialog_edit_button_cancel" />
+
+    <Button
+        android:id="@+id/dialog_edit_button_cancel"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/transparent"
+        android:minWidth="96dp"
+        android:minHeight="48dp"
+        android:text="@string/dialog_edit_cancel"
+        android:contentDescription="@string/dialog_edit_cancel_description"
+        android:textColor="@color/colorPrimary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/dialog_edit_button_apply"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_edit_picker_minute" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

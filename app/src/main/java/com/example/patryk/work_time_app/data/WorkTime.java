@@ -5,6 +5,7 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 @Entity(tableName = "workTimes")
@@ -16,10 +17,10 @@ public class WorkTime {
 
     @ColumnInfo(name = "shiftBegin")
     @NonNull
-    private String mShiftBegin;
+    private Calendar mShiftBegin;
 
     @ColumnInfo(name = "shiftEnd")
-    private String mShiftEnd;
+    private Calendar mShiftEnd;
 
     @ColumnInfo(name = "workTime")
     private long mWorkTime;
@@ -27,7 +28,7 @@ public class WorkTime {
     @ColumnInfo(name = "finished")
     private boolean mFinished;
 
-    public WorkTime(@NonNull String shiftBegin, boolean finished) {
+    public WorkTime(@NonNull Calendar shiftBegin, boolean finished) {
         this.mShiftBegin = shiftBegin;
         this.mFinished = finished;
     }
@@ -40,15 +41,19 @@ public class WorkTime {
         this.mId = id;
     }
 
-    public String getShiftBegin() {
+    public Calendar getShiftBegin() {
         return this.mShiftBegin;
     }
 
-    public String getShiftEnd() {
+    public Calendar getShiftEnd() {
         return this.mShiftEnd;
     }
 
-    public void setShiftEnd(String ShiftEnd) {
+    public void setShiftBegin(Calendar shiftBegin) {
+        this.mShiftBegin = shiftBegin;
+    }
+
+    public void setShiftEnd(Calendar ShiftEnd) {
         this.mShiftEnd = ShiftEnd;
     }
 
@@ -72,5 +77,6 @@ public class WorkTime {
         return "Id: " + this.mId + " | Begin: " + this.mShiftBegin + " | End: " + this.mShiftEnd
                 + " | Time: " + this.mWorkTime + " | Finished?: " + this.mFinished;
     }
+
 
 }

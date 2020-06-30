@@ -30,9 +30,18 @@ public interface PauseTimeDAO {
     @Query("SELECT * FROM pauseTimes")
     LiveData<List<PauseTime>> getAll();
 
+    @Query("SELECT * FROM pauseTimes WHERE workPauseId = :workId ORDER BY pauseBegin ASC")
+    LiveData<List<PauseTime>> getPauseTimesWithWorkIdLiveData(long workId);
+
     @Query("SELECT * FROM pauseTimes WHERE workPauseId = :workId")
     List<PauseTime> getPauseTimesWithWorkId(long workId);
 
     @Query("SELECT * FROM pauseTimes WHERE pauseId = :id")
     PauseTime getOne(long id);
+
+    @Query("SELECT * FROM pauseTimes  WHERE pauseEnd < :beginDate ORDER BY pauseEnd DESC LIMIT 1")
+    PauseTime getOneBefore(String beginDate);
+
+    @Query("SELECT * FROM pauseTimes WHERE pauseBegin > :endDate ORDER BY pauseBegin ASC LIMIT 1")
+    PauseTime getOneAfter(String endDate);
 }

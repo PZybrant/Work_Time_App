@@ -5,20 +5,20 @@
     <!-- Settings, should always be in the overflow -->
     <item
         android:id="@+id/action_timer"
-        android:icon="@drawable/baseline_access_time_white_48dp"
+        android:icon="@drawable/ic_access_time_24dp"
         android:title="@string/action_timer"
         app:showAsAction="always" />
 
     <item
         android:id="@+id/action_history"
-        android:icon="@drawable/baseline_history_white_48dp"
+        android:icon="@drawable/ic_baseline_history_24"
         android:title="@string/action_history"
-        app:showAsAction="ifRoom"></item>
+        app:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/action_settings"
-        android:icon="@drawable/baseline_settings_white_48dp"
+        android:icon="@drawable/ic_baseline_settings_24"
         android:title="@string/action_settings"
-        app:showAsAction="ifRoom"></item>
+        app:showAsAction="ifRoom" />
 
 </menu>

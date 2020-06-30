@@ -1,10 +1,13 @@
 package com.example.patryk.work_time_app.data;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
+
+import java.util.Calendar;
 
 import static androidx.room.ForeignKey.CASCADE;
 
@@ -21,10 +24,10 @@ public class PauseTime {
 
     @NonNull
     @ColumnInfo(name = "pauseBegin")
-    private String mPauseBegin;
+    private Calendar mPauseBegin;
 
     @ColumnInfo(name = "pauseEnd")
-    private String mPauseEnd;
+    private Calendar mPauseEnd;
 
     @ColumnInfo(name = "pauseTime")
     private long mPauseTime;
@@ -32,10 +35,11 @@ public class PauseTime {
     @ColumnInfo(name = "finished")
     private boolean mFinished;
 
-    public PauseTime(long workId, @NonNull String pauseBegin, boolean finished) {
+    public PauseTime(long workId, @NonNull Calendar pauseBegin, boolean finished) {
         this.mWorkId = workId;
         this.mPauseBegin = pauseBegin;
         this.mFinished = finished;
+
     }
 
     public long getId() {
@@ -54,15 +58,19 @@ public class PauseTime {
         this.mWorkId = id;
     }
 
-    public String getPauseBegin() {
+    public Calendar getPauseBegin() {
         return this.mPauseBegin;
     }
 
-    public String getPauseEnd() {
+    public Calendar getPauseEnd() {
         return this.mPauseEnd;
     }
 
-    public void setPauseEnd(String pauseEnd) {
+    public void setPauseBegin(Calendar pauseBegin) {
+        this.mPauseBegin = pauseBegin;
+    }
+
+    public void setPauseEnd(Calendar pauseEnd) {
         this.mPauseEnd = pauseEnd;
     }
 
@@ -86,4 +94,6 @@ public class PauseTime {
         return "Id: " + this.mId + " | Work Id: " + mWorkId + " | Begin: " + this.mPauseBegin + " | End: " + this.mPauseEnd
                 + " | Time: " + this.mPauseTime + " | Finished?: " + this.mFinished;
     }
+
+
 }

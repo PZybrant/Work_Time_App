@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.patryk.work_time_app.R;
-import com.example.patryk.work_time_app.adapters.TimerFragmentOverviewAdapter;
+import com.example.patryk.work_time_app.adapters.TimerAdapter;
 import com.example.patryk.work_time_app.data.PauseTime;
 import com.example.patryk.work_time_app.viewmodels.TimerFragmentViewModel;
 import com.example.patryk.work_time_app.data.WorkTime;
@@ -29,6 +29,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -58,14 +59,14 @@ public class TimerFragment extends Fragment {
     private Thread progressBarThread;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
-    private GregorianCalendar shiftBeginTime, shiftEndTime, pauseBegin, pauseEnd;
+    private Calendar shiftBeginTime, shiftEndTime, pauseBegin, pauseEnd;
     private ProgressBar hoursProgressBar, minutesProgressBar, secondsProgressBar;
     private TextView hoursTextView, minutesTextView, secondsTextView;
     private Button startButton, pauseResumeButton, stopButton;
     private Group buttonsGroup;
     private RecyclerView.LayoutManager layoutManager;
     private RecyclerView overviewRecyclerView;
-    private TimerFragmentOverviewAdapter recyclerviewAdapter;
+    private TimerAdapter recyclerviewAdapter;
     private View view;
     private TimerFragmentViewModel fragmentViewModel;
 
@@ -80,7 +81,7 @@ public class TimerFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        view = inflater.inflate(R.layout.new_timer_fragment, container, false);
+        view = inflater.inflate(R.layout.fragment_timer, container, false);
         init();
         return view;
     }
@@ -100,7 +101,7 @@ public class TimerFragment extends Fragment {
             actualPauseTime = sharedPreferences.getLong("totalPauseTimes", 0);
             if (mPauseId > 0) {
                 pauseTime = fragmentViewModel.getOnePauseTime(mPauseId);
-                pauseBegin = convertFromString(pauseTime.getPauseBegin());
+                pauseBegin = pauseTime.getPauseBegin();
                 isPaused = true;
             }
             resumeTimer();
@@ -109,20 +110,16 @@ public class TimerFragment extends Fragment {
 
     private void resumeTimer() {
         if (!isWorkFinished && isPaused) {
-            secondsTextView.setText(String.format(Locale.getDefault(), "%d " + getString(R.string.seconds_text), secondsValue));
-            minutesTextView.setText(String.format(Locale.getDefault(), "%d " + getString(R.string.minutes_text), minutesValue));
-            hoursTextView.setText(String.format(Locale.getDefault(), "%d " + getString(hours_text), hoursValue));
-            hoursProgressBar.setProgress(hoursValue);
-            minutesProgressBar.setProgress(minutesValue);
-            secondsProgressBar.setProgress(secondsValue);
-            pauseResumeButton.setText(R.string.resume);
+            setTextViews();
+            setProgressBars(hoursValue, minutesValue, secondsValue);
+            pauseResumeButton.setText(R.string.timer_resume);
         } else if (!isWorkFinished && !isPaused) {
             GregorianCalendar now = new GregorianCalendar(TimeZone.getDefault());
             long fragmentPauseTime = sharedPreferences.getLong("fragmentPauseTime", -1);
             setTimer(calculateDifference(fragmentPauseTime, now.getTimeInMillis()));
             runProgressBar(hoursValue, minutesValue, secondsValue);
         }
-        shiftBeginTime = convertFromString(workTime.getShiftBegin());
+        shiftBeginTime = workTime.getShiftBegin();
         startButton.setVisibility(View.INVISIBLE);
         pauseResumeButton.setVisibility(View.VISIBLE);
         stopButton.setVisibility(View.VISIBLE);
@@ -141,12 +138,8 @@ public class TimerFragment extends Fragment {
         minutesValue += min;
         hoursValue += hour;
 
-        secondsTextView.setText(String.format(Locale.getDefault(), "%d " + getString(R.string.seconds_text), secondsValue));
-        minutesTextView.setText(String.format(Locale.getDefault(), "%d " + getString(R.string.minutes_text), minutesValue));
-        hoursTextView.setText(String.format(Locale.getDefault(), "%d " + getString(hours_text), hoursValue));
-        hoursProgressBar.setProgress(hoursValue);
-        minutesProgressBar.setProgress(minutesValue);
-        secondsProgressBar.setProgress(secondsValue);
+        setTextViews();
+        setProgressBars(hoursValue, minutesValue, secondsValue);
     }
 
     @Override
@@ -170,29 +163,30 @@ public class TimerFragment extends Fragment {
 
     private void init() {
         String[] strings = getResources().getStringArray(R.array.start_work_button);
-        hoursProgressBar = view.findViewById(R.id.hours_progress_bar);
-        minutesProgressBar = view.findViewById(R.id.minutes_progress_bar);
-        secondsProgressBar = view.findViewById(R.id.seconds_progress_bar);
+        hoursProgressBar = view.findViewById(R.id.fragment_timer_pb_hour);
+        minutesProgressBar = view.findViewById(R.id.fragment_timer_pb_minute);
+        secondsProgressBar = view.findViewById(R.id.fragment_timer_pb_second);
 
-        hoursTextView = view.findViewById(R.id.hours_text_view);
-        minutesTextView = view.findViewById(R.id.minutes_text_view);
-        secondsTextView = view.findViewById(R.id.seconds_text_view);
+        hoursTextView = view.findViewById(R.id.fragment_timer_tv_hour);
+        minutesTextView = view.findViewById(R.id.fragment_timer_tv_minute);
+        secondsTextView = view.findViewById(R.id.fragment_timer_tv_second);
+        setTextViews();
 
-        startButton = view.findViewById(R.id.start_button);
+        startButton = view.findViewById(R.id.fragment_timer_button_start);
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startButtonClick();
             }
         });
-        pauseResumeButton = view.findViewById(R.id.pause_resume_button);
+        pauseResumeButton = view.findViewById(R.id.fragment_timer_button_pause_resume);
         pauseResumeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 pauseResumeButtonClick();
             }
         });
-        stopButton = view.findViewById(R.id.stop_button);
+        stopButton = view.findViewById(R.id.fragment_timer_button_stop);
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -205,29 +199,28 @@ public class TimerFragment extends Fragment {
             pauseResumeButton.setVisibility(View.VISIBLE);
             stopButton.setVisibility(View.VISIBLE);
         }
-        overviewRecyclerView = view.findViewById(R.id.overview_recycler_view);
+        overviewRecyclerView = view.findViewById(R.id.fragment_timer_rv);
         overviewRecyclerView.setHasFixedSize(true);
         layoutManager = new LinearLayoutManager(getActivity().getBaseContext());
         overviewRecyclerView.setLayoutManager(layoutManager);
 
-        recyclerviewAdapter = new TimerFragmentOverviewAdapter(stringsList);
+        recyclerviewAdapter = new TimerAdapter(stringsList);
         overviewRecyclerView.setAdapter(recyclerviewAdapter);
     }
 
     private void startButtonClick() {
         stringsList.clear();
         shiftBeginTime = new GregorianCalendar(TimeZone.getDefault());
+        shiftBeginTime.set(Calendar.MILLISECOND, 0);
         String shiftBeginTimeString = convertToString(this.shiftBeginTime.getTime());
 
         if (shiftBeginTimeString != null) {
             isWorkFinished = false;
             stringsList.add(shiftBeginTimeString);
             recyclerviewAdapter.notifyRecyclerview();
-            workTime = new WorkTime(shiftBeginTimeString, false);
+            workTime = new WorkTime(shiftBeginTime, false);
             mWorkId = fragmentViewModel.insertWorkTime(workTime);
             runProgressBar(0, 0, -1);
-            System.out.println(mWorkId);
-            System.out.println(workTime.toString());
 
             Snackbar.make(getActivity().findViewById(R.id.fragmentContainer), "Success insert.", Snackbar.LENGTH_LONG).show();
             startButton.setVisibility(View.INVISIBLE);
@@ -239,21 +232,23 @@ public class TimerFragment extends Fragment {
     private void pauseResumeButtonClick() {
         if (!isPaused) {
             pauseBegin = new GregorianCalendar(TimeZone.getDefault());
+            pauseBegin.set(Calendar.MILLISECOND, 0);
             String pauseBeginString = convertToString(pauseBegin.getTime());
             if (pauseBeginString != null) {
-                pauseTime = new PauseTime(mWorkId, pauseBeginString, false);
+                pauseTime = new PauseTime(mWorkId, pauseBegin, false);
 
                 stringsList.add(pauseBeginString);
                 recyclerviewAdapter.notifyRecyclerview();
                 mPauseId = fragmentViewModel.insertPauseTime(pauseTime);
                 progressBarThread = null;
                 isPaused = true;
-                pauseResumeButton.setText(R.string.resume);
+                pauseResumeButton.setText(R.string.timer_resume);
             }
         } else {
             pauseEnd = new GregorianCalendar(TimeZone.getDefault());
+            pauseEnd.set(Calendar.MILLISECOND, 0);
             String pauseEndString = convertToString(pauseEnd.getTime());
-            pauseTime.setPauseEnd(pauseEndString);
+            pauseTime.setPauseEnd(pauseEnd);
             long diff = calculateDifference(pauseBegin.getTimeInMillis(), pauseEnd.getTimeInMillis());
             actualPauseTime = +diff;
             pauseTime.setPauseTime(diff);
@@ -264,22 +259,25 @@ public class TimerFragment extends Fragment {
             mPauseId = 0;
             isPaused = false;
             runProgressBar(hoursValue, minutesValue, secondsValue);
-            pauseResumeButton.setText(R.string.pause);
+            pauseResumeButton.setText(R.string.timer_pause);
         }
     }
 
     private void stopButtonClick() {
         shiftEndTime = new GregorianCalendar(TimeZone.getDefault());
+        shiftEndTime.set(Calendar.MILLISECOND, 0);
         String shiftEndTimeString = convertToString(shiftEndTime.getTime());
         long timeDifference = calculateDifference(shiftBeginTime.getTimeInMillis(), shiftEndTime.getTimeInMillis());
-        timeDifference -= actualPauseTime;
         isWorkFinished = true;
 
         if (isPaused) {
             pauseEnd = new GregorianCalendar(TimeZone.getDefault());
+            pauseEnd.set(Calendar.MILLISECOND, 0);
             String pauseEndString = convertToString(pauseEnd.getTime());
-            pauseTime.setPauseEnd(pauseEndString);
-            pauseTime.setPauseTime(calculateDifference(pauseBegin.getTimeInMillis(), pauseEnd.getTimeInMillis()));
+            pauseTime.setPauseEnd(pauseEnd);
+            long diff = calculateDifference(pauseBegin.getTimeInMillis(), pauseEnd.getTimeInMillis());
+            actualPauseTime += diff;
+            pauseTime.setPauseTime(diff);
             pauseTime.setFinished(true);
             int numberOfRowUpdated = fragmentViewModel.updatePauseTime(pauseTime);
             stringsList.add(pauseEndString);
@@ -289,7 +287,8 @@ public class TimerFragment extends Fragment {
         }
         stringsList.add(shiftEndTimeString);
         recyclerviewAdapter.notifyRecyclerview();
-        workTime.setShiftEnd(shiftEndTimeString);
+        timeDifference -= actualPauseTime;
+        workTime.setShiftEnd(shiftEndTime);
         workTime.setWorkTime(timeDifference);
         workTime.setFinished(true);
         int numberOfRowUpdated = fragmentViewModel.updateWorkTime(workTime);
@@ -297,12 +296,8 @@ public class TimerFragment extends Fragment {
         mWorkId = 0;
 
         progressBarThread = null;
-        hoursProgressBar.setProgress(0);
-        minutesProgressBar.setProgress(0);
-        secondsProgressBar.setProgress(0);
-        secondsTextView.setText(R.string.seconds_text);
-        minutesTextView.setText(R.string.minutes_text);
-        hoursTextView.setText(hours_text);
+        setProgressBars(0, 0, 0);
+        setTextViews();
         Snackbar.make(getActivity().findViewById(R.id.fragmentContainer), "Success update.", Snackbar.LENGTH_LONG).show();
 
         pauseResumeButton.setVisibility(View.INVISIBLE);
@@ -343,10 +338,7 @@ public class TimerFragment extends Fragment {
                     view.post(new Runnable() {
                         @Override
                         public void run() {
-
-                            secondsTextView.setText(String.format(Locale.getDefault(), "%d " + getString(R.string.seconds_text), secondsValue));
-                            minutesTextView.setText(String.format(Locale.getDefault(), "%d " + getString(R.string.minutes_text), minutesValue));
-                            hoursTextView.setText(String.format(Locale.getDefault(), "%d " + getString(hours_text), hoursValue));
+                            setTextViews();
                         }
                     });
                     long diffTime = System.currentTimeMillis() - startTime;
@@ -378,6 +370,44 @@ public class TimerFragment extends Fragment {
 
             return null;
         }
+    }
+
+    private void setTextViews() {
+        if (secondsValue < 10) {
+            if (secondsValue == 1) {
+                secondsTextView.setText(String.format(Locale.getDefault(), "0%d " + getString(timer_second), secondsValue));
+            } else {
+                secondsTextView.setText(String.format(Locale.getDefault(), "0%d " + getString(timer_seconds), secondsValue));
+            }
+        } else {
+            secondsTextView.setText(String.format(Locale.getDefault(), "%d " + getString(timer_seconds), secondsValue));
+        }
+
+        if (minutesValue < 10) {
+            if (minutesValue == 1) {
+                minutesTextView.setText(String.format(Locale.getDefault(), "0%d " + getString(timer_minute), minutesValue));
+            } else {
+                minutesTextView.setText(String.format(Locale.getDefault(), "0%d " + getString(timer_minutes), minutesValue));
+            }
+        } else {
+            minutesTextView.setText(String.format(Locale.getDefault(), "%d " + getString(timer_minutes), minutesValue));
+        }
+
+        if (hoursValue < 10) {
+            if (hoursValue == 1) {
+                hoursTextView.setText(String.format(Locale.getDefault(), "0%d " + getString(timer_hour), hoursValue));
+            } else {
+                hoursTextView.setText(String.format(Locale.getDefault(), "0%d " + getString(timer_hours), hoursValue));
+            }
+        } else {
+            hoursTextView.setText(String.format(Locale.getDefault(), "%d " + getString(timer_hours), hoursValue));
+        }
+    }
+
+    private void setProgressBars(int h, int m, int s) {
+        hoursProgressBar.setProgress(h);
+        minutesProgressBar.setProgress(m);
+        secondsProgressBar.setProgress(s);
     }
 
     private ArrayList<String> loadList() {

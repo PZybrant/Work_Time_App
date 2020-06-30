@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backgroundColorTransparent"
+    tools:layout_editor_absoluteY="25dp">
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="66dp" />
+
+    <ImageButton
+        android:id="@+id/fragment_edit_ib_back"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/transparent"
+        android:contentDescription="@string/edit_return_description"
+        android:scaleType="center"
+        android:src="@drawable/ic_arrow_back_24dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/fragment_edit_ib_delete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="@color/transparent"
+        android:contentDescription="@string/edit_delete_description"
+        android:minWidth="48dp"
+        android:minHeight="48dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_delete_24dp" />
+
+    <LinearLayout
+        android:id="@+id/fragment_edit_view_shift_begin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/guideline">
+
+        <TextView
+            android:id="@+id/fragment_edit_tv_shift_begin_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="viewStart"
+            tools:text="2020, January 15" />
+
+        <TextView
+            android:id="@+id/fragment_edit_tv_shift_begin_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            tools:text="@tools:sample/date/hhmmss" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/fragment_edit_view_shift_begin"
+        app:layout_constraintEnd_toStartOf="@+id/fragment_edit_view_shift_begin"
+        app:layout_constraintTop_toTopOf="@+id/fragment_edit_view_shift_begin"
+        app:srcCompat="@drawable/ic_exit_to_app_24dp" />
+
+    <ImageButton
+        android:id="@+id/fragment_edit_ib_add"
+        style="@style/Widget.AppCompat.ImageButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:background="@color/transparent"
+        android:contentDescription="@string/edit_add_description"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fragment_edit_view_shift_begin"
+        app:srcCompat="@drawable/ic_add_24dp" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/fragment_edit_rv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:clipChildren="true"
+        android:clipToPadding="true"
+        app:layout_constrainedHeight="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_max="400dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fragment_edit_ib_add"
+        tools:itemCount="11">
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+    <LinearLayout
+        android:id="@+id/fragment_edit_view_shift_end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:clipToPadding="true"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/fragment_edit_rv">
+
+        <TextView
+            android:id="@+id/fragment_edit_tv_shift_end_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="viewStart"
+            tools:text="2020, January 15" />
+
+        <TextView
+            android:id="@+id/fragment_edti_tv_shift_end_time"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            tools:text="@tools:sample/date/hhmmss" />
+    </LinearLayout>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/fragment_edit_view_shift_end"
+        app:layout_constraintEnd_toStartOf="@+id/fragment_edit_view_shift_end"
+        app:layout_constraintTop_toTopOf="@+id/fragment_edit_view_shift_end"
+        app:srcCompat="@drawable/ic_exit_to_app_24dp" />
+
+    <TextView
+        android:id="@+id/fragment_edit_tv_total"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="@+id/fragment_edit_view_shift_end"
+        app:layout_constraintStart_toStartOf="@+id/fragment_edit_view_shift_end"
+        app:layout_constraintTop_toBottomOf="@+id/fragment_edit_view_shift_end"
+        tools:text="@tools:sample/date/hhmmss" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
