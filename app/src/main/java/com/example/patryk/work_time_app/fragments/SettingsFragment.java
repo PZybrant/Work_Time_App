@@ -17,6 +17,7 @@ import androidx.preference.SwitchPreferenceCompat;
 
 import com.example.patryk.work_time_app.R;
 import com.example.patryk.work_time_app.broadcast_receivers.ReminderReceiver;
+import com.example.patryk.work_time_app.util.NotificationUtil;
 import com.example.patryk.work_time_app.viewmodels.SettingsFragmentViewModel;
 
 import java.util.Calendar;
@@ -50,16 +51,20 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             int minute = settingPreferences.getInt(PREF_MINUTE, 0);
 
             Calendar temp = Calendar.getInstance();
-            temp.setTimeInMillis(System.currentTimeMillis());
+            temp.add(Calendar.MINUTE, 2);
 
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(System.currentTimeMillis());
-            calendar.set(Calendar.HOUR_OF_DAY, hour);
-            calendar.set(Calendar.MINUTE, minute);
-            calendar.set(Calendar.SECOND, 0);
-            if (calendar.before(temp)) {
-                calendar.add(Calendar.DAY_OF_MONTH, 1);
-            }
+//            temp.setTimeInMillis(System.currentTimeMillis());
+
+//            Calendar calendar = Calendar.getInstance();
+//            calendar.setTimeInMillis(System.currentTimeMillis());
+//            calendar.set(Calendar.HOUR_OF_DAY, hour);
+//            calendar.set(Calendar.MINUTE, minute);
+//            calendar.set(Calendar.SECOND, 0);
+//            if (calendar.before(temp)) {
+//                calendar.add(Calendar.DAY_OF_MONTH, 1);
+//            }
+
+            NotificationUtil.sendReminder(getContext());
 
             isWorkReminderOn = (Boolean) newValue;
             showHideEditText();
@@ -70,22 +75,19 @@ public class SettingsFragment extends PreferenceFragmentCompat {
                     REQUEST_CODE,
                     reminderIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT);
-            AlarmManager alarmManager = getContext().getSystemService(AlarmManager.class);
+            AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
 
-            if (isWorkReminderOn) {
-                alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, reminderPendingIntent);
-            } else {
-                alarmManager.cancel(reminderPendingIntent);
-            }
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, temp.getTimeInMillis(), reminderPendingIntent);
+
 
             return true;
         });
 
-        workTimeBeginEditText.setOnPreferenceClickListener(preference -> {
-            DialogFragment timeDialog = new TimePickerFragment();
-            timeDialog.show(getActivity().getSupportFragmentManager(), "timePicker");
-            return false;
-        });
+//        workTimeBeginEditText.setOnPreferenceClickListener(preference -> {
+//            DialogFragment timeDialog = new TimePickerFragment();
+//            timeDialog.show(getActivity().getSupportFragmentManager(), "timePicker");
+//            return false;
+//        });
 
         removeDb.setOnPreferenceClickListener(preference -> {
             workId = sharedPreferences.getLong("work_id", -1);

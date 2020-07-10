@@ -3,7 +3,9 @@ package com.example.patryk.work_time_app.fragments;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Process;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +20,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.patryk.work_time_app.CountUpTimer;
 import com.example.patryk.work_time_app.R;
 import com.example.patryk.work_time_app.adapters.TimerAdapter;
 import com.example.patryk.work_time_app.data.PauseTime;
@@ -57,13 +60,13 @@ public class TimerFragment extends Fragment {
     private LiveData<List<PauseTime>> pauseTimeLiveDataList;
 
     private Thread progressBarThread;
+    private CountUpTimer countUpTimer;
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
     private Calendar shiftBeginTime, shiftEndTime, pauseBegin, pauseEnd;
     private ProgressBar hoursProgressBar, minutesProgressBar, secondsProgressBar;
     private TextView hoursTextView, minutesTextView, secondsTextView;
     private Button startButton, pauseResumeButton, stopButton;
-    private Group buttonsGroup;
     private RecyclerView.LayoutManager layoutManager;
     private RecyclerView overviewRecyclerView;
     private TimerAdapter recyclerviewAdapter;
@@ -157,6 +160,9 @@ public class TimerFragment extends Fragment {
         if (isWorkFinished) {
             stringsList.clear();
         }
+        if (countUpTimer != null) {
+            countUpTimer.stop();
+        }
         saveList(editor);
         editor.apply();
     }
@@ -241,6 +247,7 @@ public class TimerFragment extends Fragment {
                 recyclerviewAdapter.notifyRecyclerview();
                 mPauseId = fragmentViewModel.insertPauseTime(pauseTime);
                 progressBarThread = null;
+                countUpTimer.stop();
                 isPaused = true;
                 pauseResumeButton.setText(R.string.timer_resume);
             }
@@ -296,6 +303,7 @@ public class TimerFragment extends Fragment {
         mWorkId = 0;
 
         progressBarThread = null;
+        countUpTimer.stop();
         setProgressBars(0, 0, 0);
         setTextViews();
         Snackbar.make(getActivity().findViewById(R.id.fragmentContainer), "Success update.", Snackbar.LENGTH_LONG).show();
@@ -310,48 +318,29 @@ public class TimerFragment extends Fragment {
         minutesValue = minutesProgressValue;
         secondsValue = secondsProgressValue;
 
-
-        progressBarThread = new Thread(new Runnable() {
+        countUpTimer = new CountUpTimer(1000) {
             @Override
-            public void run() {
-                android.os.Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
+            public void onTick(long elapsedTime) {
+                secondsValue += 1;
+                secondsProgressBar.setProgress(secondsValue);
 
-                while (progressBarThread != null) {
-                    long startTime = System.currentTimeMillis();
-                    secondsValue += 1;
+                if (secondsValue > 59) {
+                    secondsValue = 0;
                     secondsProgressBar.setProgress(secondsValue);
-
-                    if (secondsValue > 59) {
-                        secondsValue = 0;
-                        secondsProgressBar.setProgress(secondsValue);
-                        minutesValue += 1;
-                        minutesProgressBar.setProgress(minutesValue);
-                    }
-
-                    if (minutesValue > 59) {
-                        minutesValue = 0;
-                        minutesProgressBar.setProgress(minutesValue);
-                        hoursValue += 1;
-                        hoursProgressBar.setProgress(hoursValue);
-                    }
-
-                    view.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            setTextViews();
-                        }
-                    });
-                    long diffTime = System.currentTimeMillis() - startTime;
-
-                    try {
-                        Thread.sleep(1000 - diffTime);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    minutesValue += 1;
+                    minutesProgressBar.setProgress(minutesValue);
                 }
+
+                if (minutesValue > 59) {
+                    minutesValue = 0;
+                    minutesProgressBar.setProgress(minutesValue);
+                    hoursValue += 1;
+                    hoursProgressBar.setProgress(hoursValue);
+                }
+                setTextViews();
             }
-        });
-        progressBarThread.start();
+        };
+        countUpTimer.start();
 
     }
 

@@ -78,14 +78,16 @@ public class HistoryFragment extends Fragment {
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 WorkTime workTime = historyAdapter.getSwipedTime(viewHolder.getAdapterPosition());
                 if (direction == ItemTouchHelper.LEFT) {
-                    if (workTime.isFinished()) {
-                        int numberOfRowDeleted = viewModel.deleteWorkTime(workTime);
-                        if (numberOfRowDeleted > 0) {
-                            Toast.makeText(getContext(), "Delete successful", Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        Toast.makeText(getContext(), "Cannot be deleted until is finished", Toast.LENGTH_SHORT).show();
+                    int numberOfRowDeleted = viewModel.deleteWorkTime(workTime);
+                    if (!workTime.isFinished()) {
+                        sharedPreferences.edit().putLong("work_id", -1).apply();
+                        sharedPreferences.edit().putLong("pause_id", -1).apply();
+                        sharedPreferences.edit().putStringSet("stringSet", null).apply();
                     }
+                    if (numberOfRowDeleted > 0) {
+                        Toast.makeText(getContext(), "Delete successful", Toast.LENGTH_SHORT).show();
+                    }
+
                 } else if (direction == ItemTouchHelper.RIGHT) {
                     if (workTime.isFinished()) {
                         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();

@@ -3,7 +3,8 @@
 
     <string name="init_date" translatable="false">Date of app initialization</string>
 
-    <string name="reminder_channel_id" translatable="false">Reminder notification</string>
+    <string name="reminder_channel_id" translatable="false">reminder_channel</string>
+    <string name="reminder_channel_name" translatable="false">reminder</string>
     <string name="reminder_title">It\'s time to go work!</string>
     <string name="reminder_intent_request_code" translatable="false">100</string>
 

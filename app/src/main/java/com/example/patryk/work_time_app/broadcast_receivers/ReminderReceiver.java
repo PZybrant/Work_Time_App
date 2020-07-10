@@ -19,18 +19,18 @@ public class ReminderReceiver extends BroadcastReceiver {
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         boolean isSaturdayNotificationOn = preferences.getBoolean("saturday_reminder_switch", false);
         boolean isSundayNotificationOn = preferences.getBoolean("sunday_reminder_switch", false);
-
-        if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
-            if (isSaturdayNotificationOn) {
-                NotificationUtil.sendReminder(context);
-            }
-        } else if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
-            if (isSundayNotificationOn) {
-                NotificationUtil.sendReminder(context);
-            }
-        } else {
-            NotificationUtil.sendReminder(context);
-        }
+//
+//        if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY) {
+//            if (isSaturdayNotificationOn) {
+//                NotificationUtil.sendReminder(context);
+//            }
+//        } else if (calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY) {
+//            if (isSundayNotificationOn) {
+//                NotificationUtil.sendReminder(context);
+//            }
+//        } else {
+//        }
+        NotificationUtil.sendReminder(context);
 
 
     }

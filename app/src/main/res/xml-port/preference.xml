@@ -4,7 +4,7 @@
 
     <PreferenceCategory app:title="Notifications">
         <SwitchPreferenceCompat
-            app:defaultValue="true"
+            app:defaultValue="false"
             app:key="work_reminder"
             app:summary="Send notification before work begin."
             app:title="Work reminder" />

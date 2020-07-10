@@ -7,6 +7,7 @@ import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.patryk.work_time_app.R;
+import com.example.patryk.work_time_app.Support;
 import com.example.patryk.work_time_app.broadcast_receivers.ReminderReceiver;
 
 import java.util.Calendar;
@@ -66,12 +68,12 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
                 reminderIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
-        AlarmManager alarmManager = getContext().getSystemService(AlarmManager.class);
+        AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, reminderPendingIntent);
 
         String hourText = hourOfDay < 10 ? "0" + hourOfDay : String.valueOf(hourOfDay);
         String minuteText = minute < 10 ? "0" + minute : String.valueOf(minute);
 
-        Toast.makeText(getContext(), "Alarm set to: " + hourText + ":" + minuteText, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Alarm set to: " + Support.convertToString(calendar.getTime()), Toast.LENGTH_SHORT).show();
     }
 }

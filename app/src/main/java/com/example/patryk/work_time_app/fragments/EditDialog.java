@@ -44,15 +44,16 @@ public class EditDialog extends DialogFragment {
         this.mViewModel = viewModel;
         this.mWorkTime = workTime;
         this.mType = type;
+        calendar = Calendar.getInstance();
         if (mType == 0) {
-            calendar = mWorkTime.getShiftBegin();
+            calendar.setTime(mWorkTime.getShiftBegin().getTime());
             WorkTime workTimeBefore = viewModel.getOneWorkTimeBefore(Support.convertToString(workTime.getShiftBegin().getTime()));
             if (workTimeBefore != null) {
                 calendarBefore = workTimeBefore.getShiftEnd();
             }
             calendarAfter = workTime.getShiftEnd();
         } else {
-            calendar = mWorkTime.getShiftEnd();
+            calendar.setTime(mWorkTime.getShiftEnd().getTime());
             calendarBefore = mWorkTime.getShiftBegin();
             WorkTime workTimeAfter = viewModel.getOneWorkTimeAfter(Support.convertToString(workTime.getShiftEnd().getTime()));
             if (workTimeAfter != null) {
@@ -67,9 +68,9 @@ public class EditDialog extends DialogFragment {
         this.mWorkTime = workTime;
         this.mPauseTime = pauseTime;
         this.mType = type;
-
+        calendar = Calendar.getInstance();
         if (mType == 0) {
-            calendar = mPauseTime.getPauseBegin();
+            calendar.setTime(mPauseTime.getPauseBegin().getTime());
             PauseTime pauseTimeBefore = viewModel.getOnePauseTimeBefore(Support.convertToString(pauseTime.getPauseBegin().getTime()));
             if (pauseTimeBefore != null) {
                 calendarBefore = pauseTimeBefore.getPauseEnd();
@@ -78,7 +79,7 @@ public class EditDialog extends DialogFragment {
             }
             calendarAfter = pauseTime.getPauseEnd();
         } else {
-            calendar = mPauseTime.getPauseEnd();
+            calendar.setTime(mPauseTime.getPauseEnd().getTime());
             calendarBefore = mPauseTime.getPauseBegin();
             PauseTime pauseTimeAfter = viewModel.getOnePauseTimeAfter(Support.convertToString(pauseTime.getPauseEnd().getTime()));
             if (pauseTimeAfter != null) {
@@ -141,7 +142,8 @@ public class EditDialog extends DialogFragment {
         });
 
         cancelButton.setOnClickListener(view1 -> {
-            this.dismissAllowingStateLoss();
+            calendar = null;
+            this.dismiss();
         });
 
         applyButton.setOnClickListener(view2 -> {
@@ -152,6 +154,7 @@ public class EditDialog extends DialogFragment {
                     } else if (mType == 1) {
                         mPauseTime.setPauseEnd(calendar);
                     }
+                    calendar = null;
                     mListener.onClick(mPauseTime, mType);
                 } else {
                     if (mType == 0) {
@@ -159,6 +162,7 @@ public class EditDialog extends DialogFragment {
                     } else if (mType == 1) {
                         mWorkTime.setShiftEnd(calendar);
                     }
+                    calendar = null;
                     mListener.onClick(null, mType);
                 }
             }
@@ -187,7 +191,6 @@ public class EditDialog extends DialogFragment {
                 isOk = false;
                 applyButton.setEnabled(false);
                 applyButton.setTextColor(Color.GRAY);
-                // set text in TextView
             }
         } else if (calendarBefore != null) {
             if (cal.compareTo(calendarBefore) > 0) {
@@ -198,7 +201,6 @@ public class EditDialog extends DialogFragment {
                 isOk = false;
                 applyButton.setEnabled(false);
                 applyButton.setTextColor(Color.GRAY);
-                // set text in TextView
             }
         } else if (calendarAfter != null) {
             if (cal.compareTo(calendarAfter) < 0) {
@@ -209,7 +211,6 @@ public class EditDialog extends DialogFragment {
                 isOk = false;
                 applyButton.setEnabled(false);
                 applyButton.setTextColor(Color.GRAY);
-                // set text in TextView
             }
         }
     }
