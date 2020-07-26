@@ -26,25 +26,23 @@ import java.util.List;
 
 public class EditFragment extends Fragment {
 
-    private WorkTime mWorkTime;
+    private WorkTime workTime;
     private TextView totalTimeTextView;
     private EditDialog editDialogFragment;
 
-    private EditFragmentViewModel mViewModel;
+    private EditFragmentViewModel editFragmentViewModel;
     private List<PauseTime> pauseTimeList;
     ;
-    private View viewShiftBegin;
-    private RecyclerView recyclerView;
     private TextView textViewShiftBeginDate, textViewShiftBeginTime, textViewShiftEndDate, textViewShiftEndTime;
 
     public EditFragment(WorkTime workTime) {
-        this.mWorkTime = workTime;
+        this.workTime = workTime;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mViewModel = new ViewModelProvider(this).get(EditFragmentViewModel.class);
+        editFragmentViewModel = new ViewModelProvider(this).get(EditFragmentViewModel.class);
     }
 
     @Override
@@ -52,7 +50,7 @@ public class EditFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.fragment_edit, container, false);
 
-        viewShiftBegin = view.findViewById(R.id.fragment_edit_view_shift_begin);
+        View viewShiftBegin = view.findViewById(R.id.fragment_edit_view_shift_begin);
         textViewShiftBeginDate = view.findViewById(R.id.fragment_edit_tv_shift_begin_date);
         textViewShiftBeginTime = view.findViewById(R.id.fragment_edit_tv_shift_begin_time);
         View viewShiftEnd = view.findViewById(R.id.fragment_edit_view_shift_end);
@@ -61,52 +59,50 @@ public class EditFragment extends Fragment {
         ImageButton buttonAdd = view.findViewById(R.id.fragment_edit_ib_add);
         ImageButton buttonBack = view.findViewById(R.id.fragment_edit_ib_back);
         ImageButton buttonDelete = view.findViewById(R.id.fragment_edit_ib_delete);
-        recyclerView = view.findViewById(R.id.fragment_edit_rv);
+        RecyclerView recyclerView = view.findViewById(R.id.fragment_edit_rv);
         totalTimeTextView = view.findViewById(R.id.fragment_edit_tv_total);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         EditAdapter adapter = new EditAdapter(adapterListener);
         recyclerView.setAdapter(adapter);
 
-        textViewShiftBeginDate.setText(Support.makeDateText(mWorkTime.getShiftBegin()));
-        textViewShiftBeginTime.setText(Support.makeTimeText(mWorkTime.getShiftBegin()));
-        textViewShiftEndDate.setText(Support.makeDateText(mWorkTime.getShiftEnd()));
-        textViewShiftEndTime.setText(Support.makeTimeText(mWorkTime.getShiftEnd()));
+        textViewShiftBeginDate.setText(Support.makeDateText(workTime.getShiftBegin()));
+        textViewShiftBeginTime.setText(Support.makeTimeText(workTime.getShiftBegin()));
+        textViewShiftEndDate.setText(Support.makeDateText(workTime.getShiftEnd()));
+        textViewShiftEndTime.setText(Support.makeTimeText(workTime.getShiftEnd()));
 
-        totalTimeTextView.setText(Support.convertToString(mWorkTime.getWorkTime()));
+        totalTimeTextView.setText(Support.convertTimeToString(workTime.getWorkTime()));
 
         viewShiftBegin.setOnClickListener(v -> {
-            editDialogFragment = new EditDialog(listener, mViewModel, mWorkTime, 0);
+            editDialogFragment = new EditDialog(listener, editFragmentViewModel, workTime, 0);
             editDialogFragment.show(getActivity().getSupportFragmentManager(), getTag());
             view.clearFocus();
         });
 
         viewShiftEnd.setOnClickListener(v -> {
-            editDialogFragment = new EditDialog(listener, mViewModel, mWorkTime, 1);
+            editDialogFragment = new EditDialog(listener, editFragmentViewModel, workTime, 1);
             editDialogFragment.show(getActivity().getSupportFragmentManager(), getTag());
             view.clearFocus();
         });
 
-
-        buttonAdd.setOnClickListener(view1 -> {
-            long l;
-            if (pauseTimeList == null || pauseTimeList.size() == 0 && mWorkTime.isFinished()) {
-                l = calculateDifference(mWorkTime.getShiftBegin().getTimeInMillis(), mWorkTime.getShiftEnd().getTimeInMillis()) / 2;
+        buttonAdd.setOnClickListener(v -> {
+            long differenceBetweenRecords;
+            if (pauseTimeList == null || pauseTimeList.size() == 0) {
+                differenceBetweenRecords = Support.calculateDifference(workTime.getShiftBegin().getTimeInMillis(), workTime.getShiftEnd().getTimeInMillis()) / 2;
             } else {
-                l = calculateDifference(mWorkTime.getShiftBegin().getTimeInMillis(), pauseTimeList.get(0).getPauseBegin().getTimeInMillis()) / 2;
+                differenceBetweenRecords = Support.calculateDifference(workTime.getShiftBegin().getTimeInMillis(), pauseTimeList.get(0).getPauseBegin().getTimeInMillis()) / 2;
             }
-            l /= 1000;
-            if (l >= 4) {
+            differenceBetweenRecords /= 1000;
+            if (differenceBetweenRecords >= 5) {
                 Calendar newPauseBeginTime = Calendar.getInstance();
-                newPauseBeginTime.setTimeInMillis(mWorkTime.getShiftBegin().getTimeInMillis());
-                newPauseBeginTime.add(Calendar.SECOND, (int) l);
-                PauseTime newPauseTime = new PauseTime(mWorkTime.getId(), newPauseBeginTime, true);
+                newPauseBeginTime.setTimeInMillis(workTime.getShiftBegin().getTimeInMillis());
+                newPauseBeginTime.add(Calendar.SECOND, (int) differenceBetweenRecords - 1);
                 Calendar newPauseEndTime = Calendar.getInstance();
                 newPauseEndTime.setTimeInMillis(newPauseBeginTime.getTimeInMillis());
-                newPauseEndTime.add(Calendar.SECOND, 1);
-                newPauseTime.setPauseEnd(newPauseEndTime);
-                newPauseTime.setPauseTime(calculateDifference(newPauseTime.getPauseBegin().getTimeInMillis(), newPauseTime.getPauseEnd().getTimeInMillis()));
-                long rowId = mViewModel.insertPauseTime(newPauseTime);
+                newPauseEndTime.add(Calendar.SECOND, 2);
+                long timeDifference = Support.calculateDifference(newPauseBeginTime.getTimeInMillis(), newPauseEndTime.getTimeInMillis());
+                PauseTime newPauseTime = new PauseTime(workTime.getId(), newPauseBeginTime, newPauseEndTime, timeDifference, true);
+                long rowId = editFragmentViewModel.insertPauseTime(newPauseTime);
                 if (rowId > 0) {
                     Toast.makeText(getContext(), "Insertion confirmed", Toast.LENGTH_SHORT).show();
                 }
@@ -115,27 +111,22 @@ public class EditFragment extends Fragment {
             }
         });
 
-        buttonBack.setOnClickListener(view1 -> {
+        buttonBack.setOnClickListener(v -> {
             FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
             fragmentManager.popBackStack();
         });
 
-        buttonDelete.setOnClickListener(view1 -> {
-            if (mWorkTime.isFinished()) {
-                int numberOfRowsDeleted = mViewModel.deleteWorkTime(mWorkTime);
-                if (numberOfRowsDeleted > 0) {
-                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                    fragmentManager.popBackStack();
-                }
-            } else {
-                Toast.makeText(getContext(), "Cannot be deleted", Toast.LENGTH_SHORT).show();
+        buttonDelete.setOnClickListener(v -> {
+            int numberOfRowsDeleted = editFragmentViewModel.deleteWorkTime(workTime);
+            if (numberOfRowsDeleted > 0) {
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                fragmentManager.popBackStack();
             }
         });
 
-        mViewModel.getPauseTimesWithWorkIdLiveData(mWorkTime.getId()).observe(getViewLifecycleOwner(), pauseTimes -> {
+        editFragmentViewModel.getPauseTimesWithWorkIdLiveData(workTime.getId()).observe(getViewLifecycleOwner(), pauseTimes -> {
             pauseTimeList = pauseTimes;
             adapter.setList(pauseTimes);
-            recyclerView.getAdapter().notifyDataSetChanged();
         });
 
         return view;
@@ -144,24 +135,23 @@ public class EditFragment extends Fragment {
     private EditAdapter.EditFragmentAdapterListener adapterListener = new EditAdapter.EditFragmentAdapterListener() {
         @Override
         public void onAddButtonClick(PauseTime pauseTime, int pos) {
-            long l;
+            long differenceBetweenRecords;
             if (pauseTimeList.size() == 1 || pos == pauseTimeList.size() - 1) {
-                l = calculateDifference(pauseTime.getPauseEnd().getTimeInMillis(), mWorkTime.getShiftEnd().getTimeInMillis()) / 2;
+                differenceBetweenRecords = Support.calculateDifference(pauseTime.getPauseEnd().getTimeInMillis(), workTime.getShiftEnd().getTimeInMillis()) / 2;
             } else {
-                l = calculateDifference(pauseTime.getPauseEnd().getTimeInMillis(), pauseTimeList.get(pos + 1).getPauseBegin().getTimeInMillis()) / 2;
+                differenceBetweenRecords = Support.calculateDifference(pauseTime.getPauseEnd().getTimeInMillis(), pauseTimeList.get(pos + 1).getPauseBegin().getTimeInMillis()) / 2;
             }
-            l /= 1000;
-            if (l >= 4) {
+            differenceBetweenRecords /= 1000;
+            if (differenceBetweenRecords >= 5) {
                 Calendar newPauseTimeBegin = Calendar.getInstance();
                 newPauseTimeBegin.setTimeInMillis(pauseTime.getPauseEnd().getTimeInMillis());
-                newPauseTimeBegin.add(Calendar.SECOND, (int) l);
-                PauseTime newPauseTime = new PauseTime(mWorkTime.getId(), newPauseTimeBegin, true);
+                newPauseTimeBegin.add(Calendar.SECOND, (int) differenceBetweenRecords);
                 Calendar newPauseTimeEnd = Calendar.getInstance();
                 newPauseTimeEnd.setTimeInMillis(newPauseTimeBegin.getTimeInMillis());
                 newPauseTimeEnd.add(Calendar.SECOND, 1);
-                newPauseTime.setPauseEnd(newPauseTimeEnd);
-                newPauseTime.setPauseTime(calculateDifference(newPauseTimeBegin.getTimeInMillis(), newPauseTimeEnd.getTimeInMillis()));
-                long rowId = mViewModel.insertPauseTime(newPauseTime);
+                long timeDifference = Support.calculateDifference(newPauseTimeBegin.getTimeInMillis(), newPauseTimeEnd.getTimeInMillis());
+                PauseTime newPauseTime = new PauseTime(workTime.getId(), newPauseTimeBegin, newPauseTimeEnd, timeDifference, true);
+                long rowId = editFragmentViewModel.insertPauseTime(newPauseTime);
                 if (rowId > 0) {
                     Toast.makeText(getContext(), "Insertion confirmed", Toast.LENGTH_SHORT).show();
                 }
@@ -172,19 +162,17 @@ public class EditFragment extends Fragment {
 
         @Override
         public void onDeleteButtonClick(PauseTime pauseTime) {
-            if (pauseTime.isFinished()) {
-                mViewModel.deletePauseTime(pauseTime);
-                long totalTime = mWorkTime.getWorkTime();
-                totalTime -= pauseTime.getPauseTime();
-                mWorkTime.setWorkTime(totalTime);
-                mViewModel.updateWorkTime(mWorkTime);
-                totalTimeTextView.setText(Support.convertToString(mWorkTime.getWorkTime()));
-            }
+            editFragmentViewModel.deletePauseTime(pauseTime);
+            long totalTime = workTime.getWorkTime();
+            totalTime += pauseTime.getPauseTime();
+            workTime.setWorkTime(totalTime);
+            editFragmentViewModel.updateWorkTime(workTime);
+            totalTimeTextView.setText(Support.convertTimeToString(workTime.getWorkTime()));
         }
 
         @Override
         public void onEditViewClick(View view, PauseTime pauseTime, int type) {
-            editDialogFragment = new EditDialog(listener, mViewModel, mWorkTime, pauseTime, type);
+            editDialogFragment = new EditDialog(listener, editFragmentViewModel, workTime, pauseTime, type);
             editDialogFragment.show(getActivity().getSupportFragmentManager(), getTag());
             view.clearFocus();
         }
@@ -194,45 +182,23 @@ public class EditFragment extends Fragment {
         @Override
         public void onClick(PauseTime pauseTime, int type) {
             if (pauseTime != null) {
-                long diff = calculateDifference(pauseTime.getPauseBegin().getTimeInMillis(), pauseTime.getPauseEnd().getTimeInMillis());
+                long diff = Support.calculateDifference(pauseTime.getPauseBegin().getTimeInMillis(), pauseTime.getPauseEnd().getTimeInMillis());
                 pauseTime.setPauseTime(diff);
-                mViewModel.updatePauseTime(pauseTime);
+                editFragmentViewModel.updatePauseTime(pauseTime);
             } else {
                 if (type == 0) {
-                    textViewShiftBeginDate.setText(Support.makeDateText(mWorkTime.getShiftBegin()));
-                    textViewShiftBeginTime.setText(Support.makeTimeText(mWorkTime.getShiftBegin()));
+                    textViewShiftBeginDate.setText(Support.makeDateText(workTime.getShiftBegin()));
+                    textViewShiftBeginTime.setText(Support.makeTimeText(workTime.getShiftBegin()));
                 } else if (type == 1) {
-                    textViewShiftEndDate.setText(Support.makeDateText(mWorkTime.getShiftEnd()));
-                    textViewShiftEndTime.setText(Support.makeTimeText(mWorkTime.getShiftEnd()));
+                    textViewShiftEndDate.setText(Support.makeDateText(workTime.getShiftEnd()));
+                    textViewShiftEndTime.setText(Support.makeTimeText(workTime.getShiftEnd()));
                 }
             }
-            long l = recalculateWorkTime();
-            mWorkTime.setWorkTime(l);
-            totalTimeTextView.setText(Support.convertToString(mWorkTime.getWorkTime()));
-            mViewModel.updateWorkTime(mWorkTime);
+            long l = editFragmentViewModel.recalculateWorkTime(workTime);
+            workTime.setWorkTime(l);
+            totalTimeTextView.setText(Support.convertTimeToString(workTime.getWorkTime()));
+            editFragmentViewModel.updateWorkTime(workTime);
             editDialogFragment.dismiss();
         }
     };
-
-    private long calculateDifference(long time1, long time2) {
-        return Math.abs(time1 - time2);
-    }
-
-    private long recalculateWorkTime() {
-        long totalWorkTime;
-        long totalPauseTime = 0;
-
-        Calendar x = mWorkTime.getShiftBegin();
-        Calendar y = mWorkTime.getShiftEnd();
-
-        totalWorkTime = calculateDifference(x.getTimeInMillis(), y.getTimeInMillis());
-
-        List<PauseTime> pauseTimesWithWorkId = mViewModel.getPauseTimesWithWorkId(mWorkTime.getId());
-        for (PauseTime p : pauseTimesWithWorkId) {
-            totalPauseTime += p.getPauseTime();
-        }
-
-        return totalWorkTime - totalPauseTime;
-    }
-
 }

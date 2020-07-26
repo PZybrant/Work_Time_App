@@ -13,7 +13,6 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.patryk.work_time_app.R;
 import com.example.patryk.work_time_app.Support;
-import com.example.patryk.work_time_app.data.PauseTime;
 import com.example.patryk.work_time_app.data.WorkTime;
 import com.example.patryk.work_time_app.viewmodels.HistoryFragmentViewModel;
 
@@ -23,11 +22,11 @@ import java.util.Locale;
 
 public class AddDialog extends DialogFragment {
 
-
     private Button applyButton;
     private HistoryFragmentViewModel historyViewModel;
-    private List<WorkTime> workTimeList;
+    private List<WorkTime> specifiedWorkTimeRecordList;
     private Calendar newTime, rangeFrom, rangeTo;
+    private boolean canBeCreated;
 
     public AddDialog(HistoryFragmentViewModel viewModel) {
         this.historyViewModel = viewModel;
@@ -43,6 +42,7 @@ public class AddDialog extends DialogFragment {
         NumberPicker minutePicker = view.findViewById(R.id.dialog_edit_picker_minute);
         NumberPicker secondPicker = view.findViewById(R.id.dialog_edit_picker_second);
         Button cancelButton = view.findViewById(R.id.dialog_edit_button_cancel);
+        applyButton = view.findViewById(R.id.dialog_edit_button_apply);
 
         hourPicker.setMinValue(0);
         hourPicker.setMaxValue(23);
@@ -51,28 +51,21 @@ public class AddDialog extends DialogFragment {
         secondPicker.setMinValue(0);
         secondPicker.setMaxValue(59);
 
-        applyButton = view.findViewById(R.id.dialog_edit_button_apply);
-
-        if (!canBeCreated()) {
-            applyButton.setEnabled(false);
-            applyButton.setTextColor(Color.GRAY);
-        }
 
         rangeFrom = Calendar.getInstance();
-        rangeTo = Calendar.getInstance();
         rangeFrom.set(Calendar.HOUR_OF_DAY, 0);
         rangeFrom.set(Calendar.MINUTE, 0);
         rangeFrom.set(Calendar.SECOND, 0);
         rangeFrom.set(Calendar.MILLISECOND, 0);
-        rangeTo.setTimeInMillis(rangeFrom.getTimeInMillis());
+        rangeTo = Calendar.getInstance();
         rangeTo.set(Calendar.HOUR_OF_DAY, 23);
         rangeTo.set(Calendar.MINUTE, 59);
         rangeTo.set(Calendar.SECOND, 59);
         rangeTo.set(Calendar.MILLISECOND, 999);
 
-        updateTimeList();
-
         newTime = Calendar.getInstance(Locale.getDefault());
+
+        updateTimeList();
 
         datePicker.init(newTime.get(Calendar.YEAR), newTime.get(Calendar.MONTH), newTime.get(Calendar.DAY_OF_MONTH), onDateChangedListener);
         hourPicker.setValue(newTime.get(Calendar.HOUR_OF_DAY));
@@ -81,49 +74,34 @@ public class AddDialog extends DialogFragment {
 
         hourPicker.setOnValueChangedListener((picker, oldVal, newVal) -> {
             newTime.set(Calendar.HOUR_OF_DAY, newVal);
-            if (canBeCreated()) {
-                applyButton.setEnabled(true);
-                applyButton.setTextColor(getResources().getColor(R.color.colorPrimary, null));
-            } else {
-                applyButton.setEnabled(false);
-                applyButton.setTextColor(Color.GRAY);
-            }
+            canBeCreated = historyViewModel.canBeCreated(newTime, specifiedWorkTimeRecordList);
+            enableApplyButton(canBeCreated);
         });
 
         minutePicker.setOnValueChangedListener((picker, oldVal, newVal) -> {
             newTime.set(Calendar.MINUTE, newVal);
-            if (canBeCreated()) {
-                applyButton.setEnabled(true);
-                applyButton.setTextColor(getResources().getColor(R.color.colorPrimary, null));
-            } else {
-                applyButton.setEnabled(false);
-                applyButton.setTextColor(Color.GRAY);
-            }
+            canBeCreated = historyViewModel.canBeCreated(newTime, specifiedWorkTimeRecordList);
+            enableApplyButton(canBeCreated);
         });
 
         secondPicker.setOnValueChangedListener((picker, oldVal, newVal) -> {
             newTime.set(Calendar.SECOND, newVal);
-            if (canBeCreated()) {
-                applyButton.setEnabled(true);
-                applyButton.setTextColor(getResources().getColor(R.color.colorPrimary, null));
-            } else {
-                applyButton.setEnabled(false);
-                applyButton.setTextColor(Color.GRAY);
-            }
+            canBeCreated = historyViewModel.canBeCreated(newTime, specifiedWorkTimeRecordList);
+            enableApplyButton(canBeCreated);
         });
 
         cancelButton.setOnClickListener(v -> dismiss());
 
         applyButton.setOnClickListener(v -> {
             newTime.set(Calendar.MILLISECOND, 0);
-//            Calendar newTimeEnd = Calendar.getInstance();
-//            newTimeEnd.setTimeInMillis(newTime.getTimeInMillis());
-//            newTimeEnd.add(Calendar.SECOND, 1);
-            WorkTime newWorkTime = new WorkTime(newTime, true);
-            newWorkTime.setShiftEnd(newTime);
+            WorkTime newWorkTime = new WorkTime(newTime, newTime, 0, true);
             historyViewModel.insertWorkTime(newWorkTime);
             dismiss();
         });
+
+        canBeCreated = historyViewModel.canBeCreated(newTime, specifiedWorkTimeRecordList);
+        enableApplyButton(canBeCreated);
+
         return view;
     }
 
@@ -142,30 +120,16 @@ public class AddDialog extends DialogFragment {
     };
 
     private void updateTimeList() {
-        workTimeList = historyViewModel.getWorkWithSpecifiedDate(Support.convertToString(rangeFrom.getTime()), Support.convertToString(rangeTo.getTime()));
+        specifiedWorkTimeRecordList = historyViewModel.getTimeRecordListWithSpecifiedDate(Support.convertDateToString(rangeFrom.getTime()), Support.convertDateToString(rangeTo.getTime()));
     }
 
-    private boolean canBeCreated() {
-        if (workTimeList == null || workTimeList.size() == 0) {
-            return true;
+    private void enableApplyButton(boolean enable) {
+        if (enable) {
+            applyButton.setEnabled(true);
+            applyButton.setTextColor(getResources().getColor(R.color.colorPrimary, null));
         } else {
-            for (int i = 0; i < workTimeList.size(); i++) {
-                WorkTime workTimeToCompare = workTimeList.get(i);
-                WorkTime workTimeToCompare2 = i == workTimeList.size() - 1 ? null : workTimeList.get(i + 1);
-                if (i == 0 && newTime.before(workTimeList.get(i).getShiftBegin())) {
-                    return true;
-                }
-                if (workTimeToCompare2 != null) {
-                    if (newTime.after(workTimeList.get(i).getShiftEnd()) && newTime.before(workTimeList.get(i + 1).getShiftBegin())) {
-                        return true;
-                    }
-                } else {
-                    if (newTime.after(workTimeList.get(i).getShiftEnd())) {
-                        return true;
-                    }
-                }
-            }
-            return false;
+            applyButton.setEnabled(false);
+            applyButton.setTextColor(Color.GRAY);
         }
     }
 }

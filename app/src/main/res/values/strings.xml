@@ -1,9 +1,12 @@
 <resources>
-    <string name="app_name" translatable="false">Work_Time_App</string>
+    <string name="app_name" translatable="false">WorkTime Recorder</string>
 
     <string name="init_date" translatable="false">Date of app initialization</string>
 
-    <string name="reminder_channel_id" translatable="false">Reminder notification</string>
+    <string name="shared_preference_name" translatable="false">com.example.patryk.work_time_app.SHARED_PREFERENCES</string>
+
+    <string name="reminder_channel_id" translatable="false">reminder_channel</string>
+    <string name="reminder_channel_name" translatable="false">reminder</string>
     <string name="reminder_title">It\'s time to go work!</string>
     <string name="reminder_intent_request_code" translatable="false">100</string>
 
@@ -12,7 +15,7 @@
     <string name="action_history">History</string>
 
     <string name="dialog_detail_close">Close</string>
-    <string name="dialog_detail_close_description">Close</string>
+    <string name="dialog_detail_close_description">Close button</string>
 
     <string name="dialog_edit_apply">Apply</string>
     <string name="dialog_edit_apply_description">Apply</string>
@@ -20,13 +23,13 @@
     <string name="dialog_edit_cancel_description">Cancel</string>
 
     <string name="dialog_filter_apply">Apply</string>
-    <string name="dialog_filter_apply_description">Apply</string>
+    <string name="dialog_filter_apply_description">Apply button</string>
     <string name="dialog_filter_date_from">From:</string>
     <string name="dialog_filter_date_to">To:</string>
 
     <string name="edit_add_description">Add</string>
-    <string name="edit_delete_description">Delete</string>
-    <string name="edit_return_description">Return</string>
+    <string name="edit_delete_description">Delete button</string>
+    <string name="edit_return_description">Return button</string>
 
     <string name="history_reset">Reset</string>
     <string name="history_total" translatable="false">Total amount:</string>

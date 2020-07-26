@@ -3,10 +3,13 @@ package com.example.patryk.work_time_app.data;
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import com.example.patryk.work_time_app.Support;
+
 import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.util.Locale;
 
 @Entity(tableName = "workTimes")
 public class WorkTime {
@@ -28,9 +31,17 @@ public class WorkTime {
     @ColumnInfo(name = "finished")
     private boolean mFinished;
 
-    public WorkTime(@NonNull Calendar shiftBegin, boolean finished) {
-        this.mShiftBegin = shiftBegin;
-        this.mFinished = finished;
+    public WorkTime() {
+        this.mShiftBegin = Calendar.getInstance(Locale.getDefault());
+        this.mFinished = false;
+    }
+
+    @Ignore
+    public WorkTime(@NonNull Calendar mShiftBegin, Calendar mShiftEnd, long mWorkTime, boolean mFinished) {
+        this.mShiftBegin = mShiftBegin;
+        this.mShiftEnd = mShiftEnd;
+        this.mWorkTime = mWorkTime;
+        this.mFinished = mFinished;
     }
 
     public long getId() {
@@ -55,6 +66,19 @@ public class WorkTime {
 
     public void setShiftEnd(Calendar ShiftEnd) {
         this.mShiftEnd = ShiftEnd;
+    }
+
+    public void makeShiftEndTimestamp() {
+        this.mShiftEnd = Calendar.getInstance(Locale.getDefault());
+        this.mWorkTime = Support.calculateDifference(this.mShiftBegin.getTimeInMillis(), this.mShiftEnd.getTimeInMillis());
+    }
+
+    public String getShiftBeginText() {
+        return Support.convertDateToString(mShiftBegin.getTime());
+    }
+
+    public String getShiftEndText() {
+        return Support.convertDateToString(mShiftEnd.getTime());
     }
 
     public long getWorkTime() {

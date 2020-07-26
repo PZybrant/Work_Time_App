@@ -1,32 +1,29 @@
 package com.example.patryk.work_time_app;
 
-import android.app.AlarmManager;
+import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.example.patryk.work_time_app.broadcast_receivers.ReminderReceiver;
-import com.example.patryk.work_time_app.fragments.FilterDialog;
 import com.example.patryk.work_time_app.fragments.HistoryFragment;
 import com.example.patryk.work_time_app.fragments.SettingsFragment;
 import com.example.patryk.work_time_app.fragments.TimerFragment;
 
-import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class MainActivity extends AppCompatActivity implements FilterDialog.FilterDialogFragmentListener {
+public class MainActivity extends AppCompatActivity {
 
     private HistoryFragment historyFragment;
 
@@ -48,11 +45,30 @@ public class MainActivity extends AppCompatActivity implements FilterDialog.Filt
         fragmentTransaction.add(R.id.fragmentContainer, timerFragment);
         fragmentTransaction.commit();
 
-        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        SharedPreferences preferences = getSharedPreferences(getString(R.string.shared_preference_name), MODE_PRIVATE);
         if (preferences.getLong(getString(R.string.init_date), -1) == -1) {
             SharedPreferences.Editor editor = preferences.edit();
             editor.putLong(getString(R.string.init_date), new GregorianCalendar().getTimeInMillis());
             editor.apply();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        System.out.println("onStop");
+
+        Intent reminderIntent = new Intent(this, ReminderReceiver.class);
+        reminderIntent.setFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES);
+        PendingIntent reminderPendingIntent = PendingIntent.getBroadcast(
+                this,
+                0,
+                reminderIntent,
+                PendingIntent.FLAG_NO_CREATE);
+
+        if (reminderPendingIntent == null) {
+            System.out.println("onStop: Alarm doesn't exist");
         }
     }
 
@@ -96,27 +112,19 @@ public class MainActivity extends AppCompatActivity implements FilterDialog.Filt
                 // If we got here, the user's action was not recognized.
                 // Invoke the superclass to handle it.
                 return super.onOptionsItemSelected(item);
-
         }
-    }
-
-    @Override
-    public void onApplyButtonClick(DialogFragment dialogFragment, long date1, long date2) {
-        Bundle bundle = new Bundle();
-        bundle.putLong("from", date1);
-        bundle.putLong("to", date2);
-        historyFragment.setArguments(bundle);
-        historyFragment.update(bundle);
     }
 
     private void registerNotificationChannels() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = getString(R.string.reminder_channel_id);
+            CharSequence name = getString(R.string.reminder_channel_name);
             String description = "description";
             int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel channel = new NotificationChannel(getString(R.string.reminder_channel_id), name, importance);
             channel.setDescription(description);
-            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            channel.setShowBadge(false);
+            channel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
+            NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             notificationManager.createNotificationChannel(channel);
         }
     }
@@ -133,54 +141,14 @@ public class MainActivity extends AppCompatActivity implements FilterDialog.Filt
 
         if (currentVersionCode == savedVersionCode) {
             // Normal run
-            registerNotificationAlarm();
+//            registerNotificationAlarm();
         } else if (savedVersionCode == DOESNT_EXIST) {
             // First run
-            registerNotificationAlarm();
+//            registerNotificationAlarm();
         } else if (currentVersionCode > savedVersionCode) {
             // Updated run
+//            registerNotificationAlarm();
         }
         preferences.edit().putInt(PREF_VERSION_CODE_KEY, currentVersionCode).apply();
     }
-
-    private void registerNotificationAlarm() {
-        final String PREF_HOUR = "pref_hour";
-        final String PREF_MINUTE = "pref_minute";
-        final int REQUEST_CODE = Integer.parseInt(getString(R.string.reminder_intent_request_code));
-
-        SharedPreferences defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean isWorkReminderOn = defaultSharedPreferences.getBoolean("work_reminder", false);
-
-        if (isWorkReminderOn) {
-            int hour = defaultSharedPreferences.getInt(PREF_HOUR, 8);
-            int minute = defaultSharedPreferences.getInt(PREF_MINUTE, 0);
-            Calendar temp = Calendar.getInstance();
-            temp.setTimeInMillis(System.currentTimeMillis());
-
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(System.currentTimeMillis());
-            calendar.set(Calendar.HOUR_OF_DAY, hour);
-            calendar.set(Calendar.MINUTE, minute);
-            calendar.set(Calendar.SECOND, 0);
-            SharedPreferences.Editor edit = defaultSharedPreferences.edit();
-            edit.putInt(PREF_HOUR, hour);
-            edit.putInt(PREF_MINUTE, minute);
-            edit.apply();
-
-            if (calendar.before(temp)) {
-                calendar.add(Calendar.DAY_OF_MONTH, 1);
-            }
-
-            Intent reminderIntent = new Intent(this, ReminderReceiver.class);
-            PendingIntent reminderPendingIntent = PendingIntent.getBroadcast(
-                    this,
-                    REQUEST_CODE,
-                    reminderIntent,
-                    PendingIntent.FLAG_UPDATE_CURRENT);
-
-            AlarmManager alarmManager = getSystemService(AlarmManager.class);
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, reminderPendingIntent);
-        }
-    }
-
 }

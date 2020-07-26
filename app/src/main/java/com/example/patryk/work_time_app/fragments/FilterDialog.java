@@ -1,7 +1,6 @@
 package com.example.patryk.work_time_app.fragments;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -11,40 +10,34 @@ import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
 import com.example.patryk.work_time_app.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.Locale;
 
 public class FilterDialog extends DialogFragment {
 
     public interface FilterDialogFragmentListener {
-        void onApplyButtonClick(DialogFragment dialogFragment, long date1, long date2);
+        void onApplyButtonClick(Calendar date1, Calendar date2);
     }
 
     private FilterDialogFragmentListener listener;
-    private SharedPreferences sharedPreferences;
 
-    private CalendarView calendarView, tempCalendarView;
     private TextView fromTextView, toTextView;
-    private Button applyButton, resetButton;
-    private Calendar date1, date2;
+    private Button applyButton;
+    private Calendar rangeFrom, rangeTo;
     private boolean selectFirstDate = true;
 
+    public FilterDialog(FilterDialogFragmentListener listener) {
+        this.listener = listener;
+    }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        try {
-            listener = (FilterDialogFragmentListener) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(getActivity().toString() + " must implement FilterDialogFragmentListener");
-        }
     }
 
     @Override
@@ -53,65 +46,57 @@ public class FilterDialog extends DialogFragment {
         View view = inflater.inflate(R.layout.dialog_filter, container, false);
         fromTextView = view.findViewById(R.id.dialog_filter_tv_date_from);
         toTextView = view.findViewById(R.id.dialog_filter_tv_date_to);
-        calendarView = view.findViewById(R.id.dialog_filter_calendar_view);
+        CalendarView calendarView = view.findViewById(R.id.dialog_filter_calendar_view);
         applyButton = view.findViewById(R.id.dialog_filter_button_apply);
         applyButton.setEnabled(false);
         applyButton.setTextColor(Color.BLACK);
 
-        calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+        calendarView.setOnDateChangeListener((view1, year, month, dayOfMonth) -> {
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 
-                if (selectFirstDate) {
-                    if (date2 != null) {
-                        date2 = null;
-                        toTextView.setText("");
-                        applyButton.setEnabled(false);
-                        applyButton.setTextColor(Color.LTGRAY);
-                    }
-                    date1 = Calendar.getInstance(Locale.getDefault());
-                    date1.set(year, month, dayOfMonth);
-                    selectFirstDate = false;
-                    if (date2 != null && date1.compareTo(date2) > 0) {
-                        Calendar temp = date2;
-                        date2 = date1;
-                        date1 = temp;
-                        fromTextView.setText(dateFormat.format((date2.getTimeInMillis())));
-                    }
-                    fromTextView.setText(dateFormat.format((date1.getTimeInMillis())));
-                } else {
-                    date2 = Calendar.getInstance(Locale.getDefault());
-                    date2.set(year, month, dayOfMonth);
-                    selectFirstDate = true;
-                    if (date1.compareTo(date2) > 0) {
-                        Calendar temp = date2;
-                        date2 = date1;
-                        date1 = temp;
-                        fromTextView.setText(dateFormat.format(date1.getTimeInMillis()));
-                    }
-                    toTextView.setText(dateFormat.format(date2.getTimeInMillis()));
-                    applyButton.setEnabled(true);
-                    applyButton.setTextColor(getResources().getColor(R.color.colorPrimaryDark, null));
+            if (selectFirstDate) {
+
+                // if rangeTo is not null, it means the date was already selected, but user want to change it.
+                // therefor values needs to be reset
+                if (rangeTo != null) {
+                    rangeTo = null;
+                    toTextView.setText("");
+                    applyButton.setEnabled(false);
+                    applyButton.setTextColor(Color.LTGRAY);
                 }
+
+                rangeFrom = Calendar.getInstance(Locale.getDefault());
+                rangeFrom.set(year, month, dayOfMonth);
+                selectFirstDate = false;
+                fromTextView.setText(dateFormat.format((rangeFrom.getTimeInMillis())));
+            } else {
+                rangeTo = Calendar.getInstance(Locale.getDefault());
+                rangeTo.set(year, month, dayOfMonth);
+                selectFirstDate = true;
+                if (rangeFrom.after(rangeTo)) {
+                    Calendar temp = rangeTo;
+                    rangeTo = rangeFrom;
+                    rangeFrom = temp;
+                    fromTextView.setText(dateFormat.format(rangeFrom.getTimeInMillis()));
+                }
+                toTextView.setText(dateFormat.format(rangeTo.getTimeInMillis()));
+                applyButton.setEnabled(true);
+                applyButton.setTextColor(getResources().getColor(R.color.colorPrimaryDark, null));
             }
         });
 
-        applyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                date1.set(Calendar.HOUR_OF_DAY, 0);
-                date1.set(Calendar.MINUTE, 0);
-                date1.set(Calendar.SECOND, 0);
-                date1.set(Calendar.MILLISECOND, 0);
+        applyButton.setOnClickListener(v -> {
+            rangeFrom.set(Calendar.HOUR_OF_DAY, 0);
+            rangeFrom.set(Calendar.MINUTE, 0);
+            rangeFrom.set(Calendar.SECOND, 0);
+            rangeFrom.set(Calendar.MILLISECOND, 0);
 
-                date2.set(Calendar.HOUR_OF_DAY, 23);
-                date2.set(Calendar.MINUTE, 59);
-                date2.set(Calendar.SECOND, 59);
-                date2.set(Calendar.MILLISECOND, 999);
-                listener.onApplyButtonClick(FilterDialog.this, date1.getTimeInMillis(), date2.getTimeInMillis());
-                dismiss();
-            }
+            rangeTo.set(Calendar.HOUR_OF_DAY, 23);
+            rangeTo.set(Calendar.MINUTE, 59);
+            rangeTo.set(Calendar.SECOND, 59);
+            rangeTo.set(Calendar.MILLISECOND, 999);
+            listener.onApplyButtonClick(rangeFrom, rangeTo);
+            dismiss();
         });
         return view;
     }

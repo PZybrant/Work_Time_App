@@ -14,9 +14,9 @@ import java.util.ArrayList;
 
 public class TimerAdapter extends RecyclerView.Adapter<TimerAdapter.MyViewHolder> {
 
-    private ArrayList<String> stringArrayList;
+    private ArrayList<String> recordList;
 
-    public class MyViewHolder extends RecyclerView.ViewHolder {
+    public static class MyViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView textView;
 
@@ -33,21 +33,21 @@ public class TimerAdapter extends RecyclerView.Adapter<TimerAdapter.MyViewHolder
         return new MyViewHolder(view);
     }
 
-    public TimerAdapter(ArrayList<String> list) {
-        stringArrayList = list;
-    }
-
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.textView.setText(stringArrayList.get(position));
+        holder.textView.setText(recordList.get(position));
     }
 
-    public void notifyRecyclerview() {
+    public void setRecordList(ArrayList<String> list) {
+        recordList = list;
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
-        return stringArrayList.size();
+        if (recordList != null) {
+            return recordList.size();
+        }
+        return 0;
     }
 }

@@ -4,71 +4,79 @@ import android.app.Application;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import com.example.patryk.work_time_app.data.PauseTime;
 import com.example.patryk.work_time_app.data.WorkTime;
 import com.example.patryk.work_time_app.data.Repository;
 
+import java.util.Calendar;
 import java.util.List;
 
 public class HistoryFragmentViewModel extends AndroidViewModel {
 
-    private Repository mRepository;
-    private WorkTime mWorkTime;
-    private LiveData<List<WorkTime>> mWorkTimeList;
-    private LiveData<List<WorkTime>> mWorkTimeListFilterdByDateLiveData;
-    private List<WorkTime> mWorkTimeListFilterdByDate;
+    private Repository repository;
+    private MutableLiveData<List<WorkTime>> workTimeListLD = new MutableLiveData<>();
+    private List<WorkTime> workTimeRecordList;
     private List<PauseTime> mPauseTimesWithWorkId;
-    private LiveData<List<PauseTime>> mPauseTimesWithWorkIdLiveData;
 
     public HistoryFragmentViewModel(Application application) {
         super(application);
-        mRepository = new Repository(application);
+        repository = new Repository(application);
     }
 
     public long insertWorkTime(WorkTime workTime) {
-        return mRepository.insertWorkTime(workTime);
+        return repository.insertWorkTime(workTime);
     }
 
-    public int updateWorkTime(WorkTime workTime) {
-        return mRepository.updateWorkTime(workTime);
+    public LiveData<List<WorkTime>> getWorkTimeRecordList() {
+        return this.workTimeListLD;
     }
 
-    public LiveData<List<WorkTime>> getWorkTimeList() {
-        this.mWorkTimeList = mRepository.getAllWorkTimes();
-        return this.mWorkTimeList;
+    public void setWorkTimeListWithAllRecords() {
+        workTimeRecordList = repository.getAllWorkTimes();
+        workTimeListLD.setValue(workTimeRecordList);
     }
 
-    public WorkTime getOneWorkTime(long id) {
-        mWorkTime = mRepository.getOneWorkTime(id);
-        return mWorkTime;
+    public void setTimeRecordListWithSpecifiedDate(String d1, String d2) {
+        workTimeRecordList = repository.getWorkWithSpecifiedDate(d1, d2);
+        workTimeListLD.setValue(workTimeRecordList);
     }
 
-    public LiveData<List<WorkTime>> getWorkWithSpecifiedDateLiveData(String d1, String d2) {
-        this.mWorkTimeListFilterdByDateLiveData = mRepository.getWorkWithSpecifiedDateLiveData(d1, d2);
-        return this.mWorkTimeListFilterdByDateLiveData;
+    public List<WorkTime> getTimeRecordListWithSpecifiedDate(String d1, String d2) {
+        return repository.getWorkWithSpecifiedDate(d1, d2);
     }
 
-    public List<WorkTime> getWorkWithSpecifiedDate(String d1, String d2) {
-        this.mWorkTimeListFilterdByDate = mRepository.getWorkWithSpecifiedDate(d1, d2);
-        return this.mWorkTimeListFilterdByDate;
-    }
-
-    public LiveData<List<PauseTime>> getPauseTimesWithWorkIdLiveData(long workId) {
-        mPauseTimesWithWorkIdLiveData = mRepository.getPauseTimesLiveData(workId);
-        return mPauseTimesWithWorkIdLiveData;
-    }
-
-    public List<PauseTime> getPauseTimesWithWorkId(long workId) {
-        mPauseTimesWithWorkId = mRepository.getPauseTimes(workId);
+    public List<PauseTime> getPauseTimeRecordListWithWorkId(long workId) {
+        mPauseTimesWithWorkId = repository.getPauseTimes(workId);
         return mPauseTimesWithWorkId;
     }
 
     public int deleteWorkTime(WorkTime workTime) {
-        return mRepository.deleteWorkTime(workTime);
+        return repository.deleteWorkTime(workTime);
     }
 
-    public int deletePauseTime(PauseTime pauseTime) {
-        return mRepository.deletePauseTime(pauseTime);
+    public boolean canBeCreated(Calendar newTime, List<WorkTime> specifiedWorkTimeRecordList) {
+        if (specifiedWorkTimeRecordList == null || specifiedWorkTimeRecordList.size() == 0) {
+            return true;
+        } else {
+            for (int i = 0; i < specifiedWorkTimeRecordList.size(); i++) {
+                WorkTime workTimeToCompare2 = i == specifiedWorkTimeRecordList.size() - 1 ? null : specifiedWorkTimeRecordList.get(i + 1);
+                if (i == 0 && newTime.before(specifiedWorkTimeRecordList.get(i).getShiftBegin())) {
+                    return true;
+                }
+                if (workTimeToCompare2 != null) {
+                    if (newTime.after(specifiedWorkTimeRecordList.get(i).getShiftEnd()) && newTime.before(specifiedWorkTimeRecordList.get(i + 1).getShiftBegin())) {
+                        return true;
+                    }
+                } else {
+                    if (newTime.after(specifiedWorkTimeRecordList.get(i).getShiftEnd())) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
     }
+
 }

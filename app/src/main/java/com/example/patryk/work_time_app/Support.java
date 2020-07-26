@@ -10,7 +10,7 @@ import java.util.TimeZone;
 
 public abstract class Support {
 
-    public static String convertToString(long timeInMilis) {
+    public static String convertTimeToString(long timeInMilis) {
         long seconds = timeInMilis / 1000;
 
         long minutes = seconds / 60;
@@ -26,7 +26,7 @@ public abstract class Support {
         return String.format("%s:%s:%s", h, m, s);
     }
 
-    public static String convertToString(Date date) {
+    public static String convertDateToString(Date date) {
         try {
 
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
@@ -76,5 +76,9 @@ public abstract class Support {
 
             return null;
         }
+    }
+
+    public static long calculateDifference(long time1, long time2) {
+        return (time1 - time2) * (-1);
     }
 }

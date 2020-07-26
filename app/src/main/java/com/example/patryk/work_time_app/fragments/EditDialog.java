@@ -1,6 +1,5 @@
 package com.example.patryk.work_time_app.fragments;
 
-import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -19,7 +18,6 @@ import com.example.patryk.work_time_app.data.WorkTime;
 import com.example.patryk.work_time_app.viewmodels.EditFragmentViewModel;
 
 import java.util.Calendar;
-import java.util.List;
 
 public class EditDialog extends DialogFragment {
 
@@ -29,62 +27,59 @@ public class EditDialog extends DialogFragment {
 
     // 0 = work/pause begin, 1 = work/pause end
     private int mType;
-    private boolean isOk = false;
 
-    private WorkTime mWorkTime;
-    private PauseTime mPauseTime;
-    private EditFragmentViewModel mViewModel;
+    private WorkTime workTime;
+    private PauseTime pauseTime;
     private OnApplyButtonClickListener mListener;
 
-    private Button applyButton;
-    private Calendar calendar, calendarBefore, calendarAfter;
+    private Button buttonApply;
+    private Calendar actualDate, dateBefore, dateAfter;
 
     EditDialog(OnApplyButtonClickListener listener, EditFragmentViewModel viewModel, WorkTime workTime, int type) {
         this.mListener = listener;
-        this.mViewModel = viewModel;
-        this.mWorkTime = workTime;
+        this.workTime = workTime;
         this.mType = type;
+        actualDate = Calendar.getInstance();
         if (mType == 0) {
-            calendar = mWorkTime.getShiftBegin();
-            WorkTime workTimeBefore = viewModel.getOneWorkTimeBefore(Support.convertToString(workTime.getShiftBegin().getTime()));
+            actualDate.setTime(workTime.getShiftBegin().getTime());
+            WorkTime workTimeBefore = viewModel.getOneWorkTimeBefore(Support.convertDateToString(workTime.getShiftBegin().getTime()));
             if (workTimeBefore != null) {
-                calendarBefore = workTimeBefore.getShiftEnd();
+                dateBefore = workTimeBefore.getShiftEnd();
             }
-            calendarAfter = workTime.getShiftEnd();
-        } else {
-            calendar = mWorkTime.getShiftEnd();
-            calendarBefore = mWorkTime.getShiftBegin();
-            WorkTime workTimeAfter = viewModel.getOneWorkTimeAfter(Support.convertToString(workTime.getShiftEnd().getTime()));
+            dateAfter = workTime.getShiftEnd();
+        } else if (mType == 1) {
+            actualDate.setTime(workTime.getShiftEnd().getTime());
+            dateBefore = workTime.getShiftBegin();
+            WorkTime workTimeAfter = viewModel.getOneWorkTimeAfter(Support.convertDateToString(workTime.getShiftEnd().getTime()));
             if (workTimeAfter != null) {
-                calendarAfter = workTimeAfter.getShiftBegin();
+                dateAfter = workTimeAfter.getShiftBegin();
             }
         }
     }
 
     EditDialog(OnApplyButtonClickListener listener, EditFragmentViewModel viewModel, WorkTime workTime, PauseTime pauseTime, int type) {
         this.mListener = listener;
-        this.mViewModel = viewModel;
-        this.mWorkTime = workTime;
-        this.mPauseTime = pauseTime;
+        this.workTime = workTime;
+        this.pauseTime = pauseTime;
         this.mType = type;
-
+        actualDate = Calendar.getInstance();
         if (mType == 0) {
-            calendar = mPauseTime.getPauseBegin();
-            PauseTime pauseTimeBefore = viewModel.getOnePauseTimeBefore(Support.convertToString(pauseTime.getPauseBegin().getTime()));
+            actualDate.setTime(pauseTime.getPauseBegin().getTime());
+            PauseTime pauseTimeBefore = viewModel.getOnePauseTimeBefore(Support.convertDateToString(pauseTime.getPauseBegin().getTime()));
             if (pauseTimeBefore != null) {
-                calendarBefore = pauseTimeBefore.getPauseEnd();
+                dateBefore = pauseTimeBefore.getPauseEnd();
             } else {
-                calendarBefore = workTime.getShiftBegin();
+                dateBefore = workTime.getShiftBegin();
             }
-            calendarAfter = pauseTime.getPauseEnd();
-        } else {
-            calendar = mPauseTime.getPauseEnd();
-            calendarBefore = mPauseTime.getPauseBegin();
-            PauseTime pauseTimeAfter = viewModel.getOnePauseTimeAfter(Support.convertToString(pauseTime.getPauseEnd().getTime()));
+            dateAfter = pauseTime.getPauseEnd();
+        } else if (mType == 1) {
+            actualDate.setTime(pauseTime.getPauseEnd().getTime());
+            dateBefore = pauseTime.getPauseBegin();
+            PauseTime pauseTimeAfter = viewModel.getOnePauseTimeAfter(Support.convertDateToString(pauseTime.getPauseEnd().getTime()));
             if (pauseTimeAfter != null) {
-                calendarAfter = pauseTimeAfter.getPauseBegin();
+                dateAfter = pauseTimeAfter.getPauseBegin();
             } else {
-                calendarAfter = workTime.getShiftEnd();
+                dateAfter = workTime.getShiftEnd();
             }
         }
     }
@@ -94,74 +89,63 @@ public class EditDialog extends DialogFragment {
         super.onCreateView(inflater, container, savedInstanceState);
 
         View view = inflater.inflate(R.layout.dialog_add_edit, container, false);
-        DatePicker datePicker = view.findViewById(R.id.dialog_edit_picker_date);
-        NumberPicker hourPicker = view.findViewById(R.id.dialog_edit_picker_hour);
-        NumberPicker minutePicker = view.findViewById(R.id.dialog_edit_picker_minute);
-        NumberPicker secondPicker = view.findViewById(R.id.dialog_edit_picker_second);
-        Button cancelButton = view.findViewById(R.id.dialog_edit_button_cancel);
-        applyButton = view.findViewById(R.id.dialog_edit_button_apply);
+        DatePicker pickerDate = view.findViewById(R.id.dialog_edit_picker_date);
+        NumberPicker pickerHour = view.findViewById(R.id.dialog_edit_picker_hour);
+        NumberPicker pickerMinute = view.findViewById(R.id.dialog_edit_picker_minute);
+        NumberPicker pickerSecond = view.findViewById(R.id.dialog_edit_picker_second);
+        Button buttonCancel = view.findViewById(R.id.dialog_edit_button_cancel);
+        buttonApply = view.findViewById(R.id.dialog_edit_button_apply);
+        buttonApply.setEnabled(false);
+        buttonApply.setTextColor(Color.GRAY);
 
-        hourPicker.setMinValue(0);
-        hourPicker.setMaxValue(23);
-        minutePicker.setMinValue(0);
-        minutePicker.setMaxValue(59);
-        secondPicker.setMinValue(0);
-        secondPicker.setMaxValue(59);
-        if (!isOk) {
-            applyButton.setEnabled(false);
-            applyButton.setTextColor(Color.GRAY);
-        }
+        pickerHour.setMinValue(0);
+        pickerHour.setMaxValue(23);
+        pickerMinute.setMinValue(0);
+        pickerMinute.setMaxValue(59);
+        pickerSecond.setMinValue(0);
+        pickerSecond.setMaxValue(59);
 
-        datePicker.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), onDateChangedListener);
-        hourPicker.setValue(calendar.get(Calendar.HOUR_OF_DAY));
-        minutePicker.setValue(calendar.get(Calendar.MINUTE));
-        secondPicker.setValue(calendar.get(Calendar.SECOND));
+        pickerDate.init(actualDate.get(Calendar.YEAR), actualDate.get(Calendar.MONTH), actualDate.get(Calendar.DAY_OF_MONTH), onDateChangedListener);
+        pickerHour.setValue(actualDate.get(Calendar.HOUR_OF_DAY));
+        pickerMinute.setValue(actualDate.get(Calendar.MINUTE));
+        pickerSecond.setValue(actualDate.get(Calendar.SECOND));
 
-        hourPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-            @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                calendar.set(Calendar.HOUR_OF_DAY, newVal);
-                compareDates(calendar);
-            }
+        pickerHour.setOnValueChangedListener((picker, oldVal, newVal) -> {
+            actualDate.set(Calendar.HOUR_OF_DAY, newVal);
+            compareDates(actualDate);
         });
-        minutePicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-            @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                calendar.set(Calendar.MINUTE, newVal);
-                compareDates(calendar);
-            }
+        pickerMinute.setOnValueChangedListener((picker, oldVal, newVal) -> {
+            actualDate.set(Calendar.MINUTE, newVal);
+            compareDates(actualDate);
         });
 
-        secondPicker.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
-            @Override
-            public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-                calendar.set(Calendar.SECOND, newVal);
-                compareDates(calendar);
-            }
+        pickerSecond.setOnValueChangedListener((picker, oldVal, newVal) -> {
+            actualDate.set(Calendar.SECOND, newVal);
+            compareDates(actualDate);
         });
 
-        cancelButton.setOnClickListener(view1 -> {
-            this.dismissAllowingStateLoss();
+        buttonCancel.setOnClickListener(v -> {
+            actualDate = null;
+            this.dismiss();
         });
 
-        applyButton.setOnClickListener(view2 -> {
-            if (isOk) {
-                if (mPauseTime != null) {
-                    if (mType == 0) {
-                        mPauseTime.setPauseBegin(calendar);
-                    } else if (mType == 1) {
-                        mPauseTime.setPauseEnd(calendar);
-                    }
-                    mListener.onClick(mPauseTime, mType);
-                } else {
-                    if (mType == 0) {
-                        mWorkTime.setShiftBegin(calendar);
-                    } else if (mType == 1) {
-                        mWorkTime.setShiftEnd(calendar);
-                    }
-                    mListener.onClick(null, mType);
+        buttonApply.setOnClickListener(v -> {
+            if (pauseTime != null) {
+                if (mType == 0) {
+                    pauseTime.setPauseBegin(actualDate);
+                } else if (mType == 1) {
+                    pauseTime.setPauseEnd(actualDate);
                 }
+                mListener.onClick(pauseTime, mType);
+            } else {
+                if (mType == 0) {
+                    workTime.setShiftBegin(actualDate);
+                } else if (mType == 1) {
+                    workTime.setShiftEnd(actualDate);
+                }
+                mListener.onClick(null, mType);
             }
+            actualDate = null;
         });
 
         return view;
@@ -170,69 +154,38 @@ public class EditDialog extends DialogFragment {
     private DatePicker.OnDateChangedListener onDateChangedListener = new DatePicker.OnDateChangedListener() {
         @Override
         public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            calendar.set(Calendar.YEAR, year);
-            calendar.set(Calendar.MONTH, monthOfYear);
-            calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-            compareDates(calendar);
+            actualDate.set(Calendar.YEAR, year);
+            actualDate.set(Calendar.MONTH, monthOfYear);
+            actualDate.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+            compareDates(actualDate);
         }
     };
 
     private void compareDates(Calendar cal) {
-        if (calendarBefore != null && calendarAfter != null) {
-            if (cal.compareTo(calendarBefore) > 0 && cal.compareTo(calendarAfter) < 0) {
-                isOk = true;
-                applyButton.setEnabled(true);
-                applyButton.setTextColor(getResources().getColor(R.color.colorPrimary, null));
+        if (dateBefore != null && dateAfter != null) {
+            if (cal.compareTo(dateBefore) > 0 && cal.compareTo(dateAfter) < 0) {
+                buttonApply.setEnabled(true);
+                buttonApply.setTextColor(getResources().getColor(R.color.colorPrimary, null));
             } else {
-                isOk = false;
-                applyButton.setEnabled(false);
-                applyButton.setTextColor(Color.GRAY);
-                // set text in TextView
+                buttonApply.setEnabled(false);
+                buttonApply.setTextColor(Color.GRAY);
             }
-        } else if (calendarBefore != null) {
-            if (cal.compareTo(calendarBefore) > 0) {
-                isOk = true;
-                applyButton.setEnabled(true);
-                applyButton.setTextColor(getResources().getColor(R.color.colorPrimary, null));
+        } else if (dateBefore != null) {
+            if (cal.compareTo(dateBefore) > 0) {
+                buttonApply.setEnabled(true);
+                buttonApply.setTextColor(getResources().getColor(R.color.colorPrimary, null));
             } else {
-                isOk = false;
-                applyButton.setEnabled(false);
-                applyButton.setTextColor(Color.GRAY);
-                // set text in TextView
+                buttonApply.setEnabled(false);
+                buttonApply.setTextColor(Color.GRAY);
             }
-        } else if (calendarAfter != null) {
-            if (cal.compareTo(calendarAfter) < 0) {
-                isOk = true;
-                applyButton.setEnabled(true);
-                applyButton.setTextColor(getResources().getColor(R.color.colorPrimary, null));
+        } else if (dateAfter != null) {
+            if (cal.compareTo(dateAfter) < 0) {
+                buttonApply.setEnabled(true);
+                buttonApply.setTextColor(getResources().getColor(R.color.colorPrimary, null));
             } else {
-                isOk = false;
-                applyButton.setEnabled(false);
-                applyButton.setTextColor(Color.GRAY);
-                // set text in TextView
+                buttonApply.setEnabled(false);
+                buttonApply.setTextColor(Color.GRAY);
             }
         }
     }
-
-    private long calculateDifference(long time1, long time2) {
-        return Math.abs(time1 - time2);
-    }
-
-    private long recalculateWorkTime() {
-        long totalWorkTime;
-        long totalPauseTime = 0;
-
-        Calendar x = mWorkTime.getShiftBegin();
-        Calendar y = mWorkTime.getShiftEnd();
-
-        totalWorkTime = calculateDifference(x.getTimeInMillis(), y.getTimeInMillis());
-
-        List<PauseTime> pauseTimesWithWorkId = mViewModel.getPauseTimesWithWorkId(mWorkTime.getId());
-        for (PauseTime p : pauseTimesWithWorkId) {
-            totalPauseTime += p.getPauseTime();
-        }
-
-        return totalWorkTime - totalPauseTime;
-    }
-
 }

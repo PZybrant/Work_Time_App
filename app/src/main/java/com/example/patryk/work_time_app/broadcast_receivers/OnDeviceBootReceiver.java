@@ -41,7 +41,7 @@ public class OnDeviceBootReceiver extends BroadcastReceiver {
                 reminderIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
-        AlarmManager alarmManager = context.getSystemService(AlarmManager.class);
+        AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, reminderPendingIntent);
     }
 }

@@ -5,9 +5,13 @@ import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
+import com.example.patryk.work_time_app.Support;
+
 import java.util.Calendar;
+import java.util.Locale;
 
 import static androidx.room.ForeignKey.CASCADE;
 
@@ -35,11 +39,19 @@ public class PauseTime {
     @ColumnInfo(name = "finished")
     private boolean mFinished;
 
-    public PauseTime(long workId, @NonNull Calendar pauseBegin, boolean finished) {
+    public PauseTime(long workId) {
         this.mWorkId = workId;
-        this.mPauseBegin = pauseBegin;
-        this.mFinished = finished;
+        this.mPauseBegin = Calendar.getInstance(Locale.getDefault());
+        this.mFinished = false;
+    }
 
+    @Ignore
+    public PauseTime(long mWorkId, @NonNull Calendar mPauseBegin, Calendar mPauseEnd, long mPauseTime, boolean mFinished) {
+        this.mWorkId = mWorkId;
+        this.mPauseBegin = mPauseBegin;
+        this.mPauseEnd = mPauseEnd;
+        this.mPauseTime = mPauseTime;
+        this.mFinished = mFinished;
     }
 
     public long getId() {
@@ -72,6 +84,19 @@ public class PauseTime {
 
     public void setPauseEnd(Calendar pauseEnd) {
         this.mPauseEnd = pauseEnd;
+    }
+
+    public void makePauseEndTimestamp() {
+        this.mPauseEnd = Calendar.getInstance(Locale.getDefault());
+        this.mPauseTime = Support.calculateDifference(this.mPauseBegin.getTimeInMillis(), this.mPauseEnd.getTimeInMillis());
+    }
+
+    public String getPauseBeginText() {
+        return Support.convertDateToString(mPauseBegin.getTime());
+    }
+
+    public String getPauseEndText() {
+        return Support.convertDateToString(mPauseEnd.getTime());
     }
 
     public long getPauseTime() {

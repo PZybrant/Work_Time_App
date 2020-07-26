@@ -26,17 +26,12 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
 
     private HistoryAdapterListener mListener;
 
-    private final LayoutInflater mInflater;
-    private long id;
     private List<WorkTime> timeList;
     private Context mContext;
-    private HistoryFragmentViewModel mViewModel;
 
-    public HistoryAdapter(Context context, HistoryFragmentViewModel viewModel, HistoryAdapterListener listener) {
-        this.mViewModel = viewModel;
+    public HistoryAdapter(Context context, HistoryAdapterListener listener) {
         this.mListener = listener;
         this.mContext = context;
-        mInflater = LayoutInflater.from(mContext);
     }
 
     @Override
@@ -49,11 +44,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
     public void onBindViewHolder(MyViewHolder holder, int position) {
         if (timeList != null) {
             holder.setRowID(timeList.get(position));
-            holder.startDateTextView.setText(Support.convertToString(timeList.get(position).getShiftBegin().getTime()));
+            holder.startDateTextView.setText(Support.convertDateToString(timeList.get(position).getShiftBegin().getTime()));
             if (timeList.get(position).isFinished()) {
-                holder.stopDateTextView.setText(Support.convertToString(timeList.get(position).getShiftEnd().getTime()));
+                holder.stopDateTextView.setText(Support.convertDateToString(timeList.get(position).getShiftEnd().getTime()));
                 long timeInMilis = timeList.get(position).getWorkTime();
-                String timeInMilisString = (timeInMilis < 1000) ? "" : Support.convertToString(timeInMilis);
+                String timeInMilisString = (timeInMilis < 1000) ? "" : Support.convertTimeToString(timeInMilis);
                 holder.differenceTextView.setText(timeInMilisString);
             }
         }
@@ -82,19 +77,16 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
         private WorkTime mWorkTime;
 
         private TextView startDateTextView;
-
         private TextView stopDateTextView;
         private TextView differenceTextView;
-        private View view;
+
         private GestureDetectorCompat mDetector;
 
         private MyViewHolder(View itemView) {
             super(itemView);
-            this.view = itemView;
-            startDateTextView = view.findViewById(R.id.item_history_tv_shift_begin);
-            stopDateTextView = view.findViewById(R.id.item_history_tv_shift_end);
-            differenceTextView = view.findViewById(R.id.item_history_tv_total);
-
+            startDateTextView = itemView.findViewById(R.id.item_history_tv_shift_begin);
+            stopDateTextView = itemView.findViewById(R.id.item_history_tv_shift_end);
+            differenceTextView = itemView.findViewById(R.id.item_history_tv_total);
 
             mDetector = new GestureDetectorCompat(mContext, new MyGestureListener());
 

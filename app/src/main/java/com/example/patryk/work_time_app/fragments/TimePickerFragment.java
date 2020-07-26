@@ -1,12 +1,13 @@
 package com.example.patryk.work_time_app.fragments;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 
 import android.app.AlarmManager;
 import android.app.Dialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.example.patryk.work_time_app.R;
+import com.example.patryk.work_time_app.Support;
 import com.example.patryk.work_time_app.broadcast_receivers.ReminderReceiver;
 
 import java.util.Calendar;
@@ -26,6 +28,7 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
     private static final String PREF_MINUTE = "pref_minute";
     private SharedPreferences defaultSharedPreferences;
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         defaultSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -64,14 +67,14 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
                 getContext(),
                 REQUEST_CODE,
                 reminderIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-
-        AlarmManager alarmManager = getContext().getSystemService(AlarmManager.class);
+                PendingIntent.FLAG_UPDATE_CURRENT
+        );
+        AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, reminderPendingIntent);
 
-        String hourText = hourOfDay < 10 ? "0" + hourOfDay : String.valueOf(hourOfDay);
-        String minuteText = minute < 10 ? "0" + minute : String.valueOf(minute);
+//        String hourText = hourOfDay < 10 ? "0" + hourOfDay : String.valueOf(hourOfDay);
+//        String minuteText = minute < 10 ? "0" + minute : String.valueOf(minute);
 
-        Toast.makeText(getContext(), "Alarm set to: " + hourText + ":" + minuteText, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getContext(), "Alarm set to: " + Support.convertDateToString(calendar.getTime()), Toast.LENGTH_SHORT).show();
     }
 }

@@ -26,26 +26,22 @@ public class DetailDialogAdapter extends RecyclerView.Adapter<DetailDialogAdapte
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        String concat = Support.convertToString(mPauseTimes.get(position).getPauseBegin().getTime()) + " > " + Support.convertToString(mPauseTimes.get(position).getPauseEnd().getTime());
+        String concat = Support.convertDateToString(mPauseTimes.get(position).getPauseBegin().getTime()) + " > " + Support.convertDateToString(mPauseTimes.get(position).getPauseEnd().getTime());
         holder.textView.setText(concat);
     }
 
     @Override
     public int getItemCount() {
-        if (mPauseTimes == null) {
-            return 0;
-        } else {
+        if (mPauseTimes != null) {
             return mPauseTimes.size();
+        } else {
+            return 0;
         }
     }
 
     public void setList(List<PauseTime> pauseTimes) {
         mPauseTimes = pauseTimes;
         notifyDataSetChanged();
-    }
-
-    public PauseTime getSwipedPauseTime(int position) {
-        return mPauseTimes.get(position);
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {

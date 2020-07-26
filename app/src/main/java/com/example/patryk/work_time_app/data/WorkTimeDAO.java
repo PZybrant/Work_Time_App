@@ -27,7 +27,7 @@ public interface WorkTimeDAO {
     int deleteWorkTime(WorkTime workTime, List<PauseTime> pauseTimes);
 
     @Query("SELECT * FROM workTimes ORDER BY shiftBegin ASC")
-    LiveData<List<WorkTime>> getAll();
+    List<WorkTime> getAll();
 
     @Query("SELECT * FROM workTimes WHERE workId = :id")
     WorkTime getOne(long id);

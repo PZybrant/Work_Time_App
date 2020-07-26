@@ -28,24 +28,26 @@ import com.example.patryk.work_time_app.viewmodels.HistoryFragmentViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
 import java.util.Locale;
 
 public class HistoryFragment extends Fragment {
 
     private TextView totalTimeTextView;
     private HistoryAdapter historyAdapter;
-    private List<WorkTime> workTimeList;
     private HistoryFragmentViewModel viewModel;
     private SharedPreferences sharedPreferences;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        sharedPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
+        sharedPreferences = getActivity().getSharedPreferences(getString(R.string.shared_preference_name), Context.MODE_PRIVATE);
         viewModel = new ViewModelProvider(this).get(HistoryFragmentViewModel.class);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        viewModel.setWorkTimeListWithAllRecords();
     }
 
     @Override
@@ -58,15 +60,20 @@ public class HistoryFragment extends Fragment {
         AppCompatImageButton filterButton = view.findViewById(R.id.fragment_history_ib_filter);
         AppCompatButton resetButton = view.findViewById(R.id.fragment_history_button_reset);
 
-        long id = sharedPreferences.getLong("work_id", -1);
-        if (id > 0) {
-            addButton.setVisibility(View.INVISIBLE);
-        }
-
         recyclerView.setHasFixedSize(true);
-        historyAdapter = new HistoryAdapter(getContext(), viewModel, adapterListener);
+        historyAdapter = new HistoryAdapter(getContext(), adapterListener);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(historyAdapter);
+
+        viewModel.setWorkTimeListWithAllRecords();
+        viewModel.getWorkTimeRecordList().observe(getViewLifecycleOwner(), list -> {
+            historyAdapter.setTimes(list);
+            long totalWorkTime = 0;
+            for (WorkTime wt : list) {
+                totalWorkTime += wt.getWorkTime();
+            }
+            totalTimeTextView.setText(Support.convertTimeToString(totalWorkTime));
+        });
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
@@ -78,14 +85,18 @@ public class HistoryFragment extends Fragment {
             public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
                 WorkTime workTime = historyAdapter.getSwipedTime(viewHolder.getAdapterPosition());
                 if (direction == ItemTouchHelper.LEFT) {
-                    if (workTime.isFinished()) {
-                        int numberOfRowDeleted = viewModel.deleteWorkTime(workTime);
-                        if (numberOfRowDeleted > 0) {
-                            Toast.makeText(getContext(), "Delete successful", Toast.LENGTH_SHORT).show();
+                    int numberOfRowDeleted = viewModel.deleteWorkTime(workTime);
+                    if (numberOfRowDeleted > 0) {
+                        if (!workTime.isFinished()) {
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.remove("work_id");
+                            editor.remove("pause_id");
+                            editor.remove("stringSet");
+                            editor.apply();
                         }
-                    } else {
-                        Toast.makeText(getContext(), "Cannot be deleted until is finished", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Delete successful", Toast.LENGTH_SHORT).show();
                     }
+
                 } else if (direction == ItemTouchHelper.RIGHT) {
                     if (workTime.isFinished()) {
                         FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
@@ -94,34 +105,20 @@ public class HistoryFragment extends Fragment {
                         fragmentTransaction.addToBackStack(null);
                         fragmentTransaction.commit();
                     } else {
-                        Toast.makeText(getContext(), "Cannot be edited until is finished", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "It cannot be edited until it is finished", Toast.LENGTH_SHORT).show();
                     }
 
                 }
             }
         }).attachToRecyclerView(recyclerView);
 
-        viewModel.getWorkTimeList().observe(getViewLifecycleOwner(), list -> {
-            workTimeList = list;
-            historyAdapter.setTimes(workTimeList);
-            long totalWorkTime = 0;
-            for (WorkTime wt : list) {
-                totalWorkTime += wt.getWorkTime();
-            }
-            totalTimeTextView.setText(Support.convertToString(totalWorkTime));
+        filterButton.setOnClickListener(view1 -> {
+            DialogFragment dialogFragment = new FilterDialog(filterDialogFragmentListener);
+            dialogFragment.show(getActivity().getSupportFragmentManager(), getTag());
+            HistoryFragment.this.onPause();
         });
 
-
-        filterButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                DialogFragment dialogFragment = new FilterDialog();
-                dialogFragment.show(getActivity().getSupportFragmentManager(), getTag());
-                HistoryFragment.this.onPause();
-            }
-        });
-
-        resetButton.setOnClickListener(view1 -> historyAdapter.setTimes(workTimeList));
+        resetButton.setOnClickListener(view1 -> viewModel.setWorkTimeListWithAllRecords());
 
         addButton.setOnClickListener(view1 -> {
             DialogFragment addDialog = new AddDialog(viewModel);
@@ -130,30 +127,12 @@ public class HistoryFragment extends Fragment {
         return view;
     }
 
-    public void update(Bundle args) {
+    private FilterDialog.FilterDialogFragmentListener filterDialogFragmentListener = (date1, date2) -> {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
-        long from = args.getLong("from");
-        long to = args.getLong("to");
-
-        GregorianCalendar date1 = new GregorianCalendar(Locale.getDefault());
-        date1.setTime(new Date(from));
-
-        GregorianCalendar date2 = new GregorianCalendar(Locale.getDefault());
-        date2.setTime(new Date(to));
-
         String fDate = dateFormat.format(date1.getTime());
         String tDate = dateFormat.format(date2.getTime());
-
-        viewModel.getWorkWithSpecifiedDateLiveData(fDate, tDate).observe(getViewLifecycleOwner(), list -> {
-                    historyAdapter.setTimes(list);
-                    long totalWorkTime = 0;
-                    for (WorkTime wt : list) {
-                        totalWorkTime += wt.getWorkTime();
-                    }
-                    totalTimeTextView.setText(Support.convertToString(totalWorkTime));
-                }
-        );
-    }
+        viewModel.setTimeRecordListWithSpecifiedDate(fDate, tDate);
+    };
 
     private HistoryAdapter.HistoryAdapterListener adapterListener = mWorkTime -> {
         DetailWorkTimeDialog detailWorkTimeDialog = new DetailWorkTimeDialog(viewModel, mWorkTime);

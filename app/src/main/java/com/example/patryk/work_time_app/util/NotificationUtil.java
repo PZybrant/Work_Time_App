@@ -14,7 +14,7 @@ import com.example.patryk.work_time_app.broadcast_receivers.SnoozeReceiver;
 
 public abstract class NotificationUtil {
 
-    private static final int REMINDER_NOTIFICATION_ID = 0;
+    private static final int REMINDER_NOTIFICATION_ID = 684;
     private static final int SNOOZE_REQUEST_CODE = 0;
     private static final int CONTENT_REQUEST_CODE = 1;
     private static final int CANCEL_REQUEST_CODE = 2;
@@ -46,15 +46,18 @@ public abstract class NotificationUtil {
                 snoozeIntent,
                 FLAGS
         );
+        final String CHANNEL_ID = applicationContext.getString(R.string.reminder_channel_id);
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(applicationContext, applicationContext.getString(R.string.reminder_channel_id))
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(applicationContext, CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_access_time_24dp)
                 .setContentTitle(applicationContext.getString(R.string.reminder_title))
                 .setContentIntent(contentPendingIntent)
                 .setAutoCancel(true)
                 .addAction(R.drawable.ic_access_time_24dp, "Cancel", cancelPendingIntent)
                 .addAction(R.drawable.ic_access_time_24dp, "Remind later.", snoozePendingIntent)
-                .setPriority(NotificationCompat.PRIORITY_HIGH);
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_REMINDER);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(applicationContext);
         notificationManager.notify(REMINDER_NOTIFICATION_ID, builder.build());

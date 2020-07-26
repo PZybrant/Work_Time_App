@@ -15,11 +15,8 @@ public class Repository {
 
     private WorkTimeDAO mWorkTimeDAO;
     private PauseTimeDAO mPauseTimeDAO;
-    private LiveData<List<WorkTime>> mWorkTimeList;
     private WorkTime mWorkTime;
-    private List<WorkAndPauseTime> mWorkAndPauseTimeList;
     private LiveData<List<PauseTime>> mAllPauseTimeList, mPauseTimesWithWorkIdLiveData;
-    private List<PauseTime> mPauseTimeList;
     private PauseTime mPauseTime;
     private WorkTimeDatabase db;
 
@@ -89,9 +86,22 @@ public class Repository {
         return rowDeleted;
     }
 
-    public LiveData<List<WorkTime>> getAllWorkTimes() {
-        this.mWorkTimeList = mWorkTimeDAO.getAll();
-        return this.mWorkTimeList;
+    public List<WorkTime> getAllWorkTimes() {
+        Callable<List<WorkTime>> callable = () -> mWorkTimeDAO.getAll();
+
+        Future<List<WorkTime>> future = WorkTimeDatabase.databaseExecutor.submit(callable);
+
+        List<WorkTime> strings = new ArrayList<>();
+
+        try {
+            strings = future.get();
+        } catch (InterruptedException e1) {
+            e1.printStackTrace();
+        } catch (ExecutionException e2) {
+            e2.printStackTrace();
+        }
+        return strings;
+
     }
 
     public WorkTime getOneWorkTime(long id) {

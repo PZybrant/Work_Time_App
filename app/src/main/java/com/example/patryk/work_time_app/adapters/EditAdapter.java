@@ -12,8 +12,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.patryk.work_time_app.R;
 import com.example.patryk.work_time_app.Support;
 import com.example.patryk.work_time_app.data.PauseTime;
-import com.example.patryk.work_time_app.data.WorkTime;
-import com.example.patryk.work_time_app.fragments.EditDialog;
 
 import java.util.List;
 
@@ -27,13 +25,11 @@ public class EditAdapter extends RecyclerView.Adapter<EditAdapter.MyViewHolder> 
         void onEditViewClick(View view, PauseTime pauseTime, int type);
     }
 
-    private WorkTime mWorkTime;
-    private List<PauseTime> mPauseTimeList;
-    private EditFragmentAdapterListener mListener;
-    private EditDialog editDialogFragment;
+    private List<PauseTime> pauseTimeList;
+    private EditFragmentAdapterListener listener;
 
     public EditAdapter(EditFragmentAdapterListener listener) {
-        mListener = listener;
+        this.listener = listener;
     }
 
     @NonNull
@@ -45,26 +41,26 @@ public class EditAdapter extends RecyclerView.Adapter<EditAdapter.MyViewHolder> 
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.setPauseTimeId(mPauseTimeList.get(position));
+        holder.setPauseTimeId(pauseTimeList.get(position));
         holder.setPosition(position);
-        holder.textViewBeginPauseDate.setText(Support.makeDateText(mPauseTimeList.get(position).getPauseBegin()));
-        holder.textViewBeginPauseTime.setText(Support.makeTimeText(mPauseTimeList.get(position).getPauseBegin()));
-        holder.textViewEndPauseDate.setText(Support.makeDateText(mPauseTimeList.get(position).getPauseEnd()));
-        holder.textViewEndPauseTime.setText(Support.makeTimeText(mPauseTimeList.get(position).getPauseEnd()));
-        holder.textViewTotal.setText(Support.convertToString(mPauseTimeList.get(position).getPauseTime()));
+        holder.textViewBeginPauseDate.setText(Support.makeDateText(pauseTimeList.get(position).getPauseBegin()));
+        holder.textViewBeginPauseTime.setText(Support.makeTimeText(pauseTimeList.get(position).getPauseBegin()));
+        holder.textViewEndPauseDate.setText(Support.makeDateText(pauseTimeList.get(position).getPauseEnd()));
+        holder.textViewEndPauseTime.setText(Support.makeTimeText(pauseTimeList.get(position).getPauseEnd()));
+        holder.textViewTotal.setText(Support.convertTimeToString(pauseTimeList.get(position).getPauseTime()));
     }
 
     @Override
     public int getItemCount() {
-        if (mPauseTimeList == null) {
-            return 0;
+        if (pauseTimeList != null) {
+            return pauseTimeList.size();
         } else {
-            return mPauseTimeList.size();
+            return 0;
         }
     }
 
     public void setList(List<PauseTime> list) {
-        this.mPauseTimeList = list;
+        this.pauseTimeList = list;
         notifyDataSetChanged();
     }
 
@@ -86,11 +82,11 @@ public class EditAdapter extends RecyclerView.Adapter<EditAdapter.MyViewHolder> 
             textViewEndPauseTime = itemView.findViewById(R.id.row_edit_view_pause_end_time);
             textViewTotal = itemView.findViewById(R.id.row_edit_tv_total);
 
-            viewBeginPauseDateTime.setOnClickListener(v -> mListener.onEditViewClick(v, pauseTime, 0));
-            viewEndPauseDateTime.setOnClickListener(v -> mListener.onEditViewClick(v, pauseTime, 1));
+            viewBeginPauseDateTime.setOnClickListener(v -> listener.onEditViewClick(v, pauseTime, 0));
+            viewEndPauseDateTime.setOnClickListener(v -> listener.onEditViewClick(v, pauseTime, 1));
 
-            buttonDelete.setOnClickListener(view -> mListener.onDeleteButtonClick(pauseTime));
-            buttonAdd.setOnClickListener(view -> mListener.onAddButtonClick(pauseTime, position));
+            buttonDelete.setOnClickListener(view -> listener.onDeleteButtonClick(pauseTime));
+            buttonAdd.setOnClickListener(view -> listener.onAddButtonClick(pauseTime, position));
         }
 
         void setPauseTimeId(PauseTime pauseTime) {
