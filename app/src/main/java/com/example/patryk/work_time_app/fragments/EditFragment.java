@@ -101,6 +101,11 @@ public class EditFragment extends Fragment {
                 newPauseEndTime.setTimeInMillis(newPauseBeginTime.getTimeInMillis());
                 newPauseEndTime.add(Calendar.SECOND, 2);
                 long timeDifference = Support.calculateDifference(newPauseBeginTime.getTimeInMillis(), newPauseEndTime.getTimeInMillis());
+                long totalTime = workTime.getWorkTime();
+                totalTime -= timeDifference;
+                workTime.setWorkTime(totalTime);
+                editFragmentViewModel.updateWorkTime(workTime);
+                totalTimeTextView.setText(Support.convertTimeToString(workTime.getWorkTime()));
                 PauseTime newPauseTime = new PauseTime(workTime.getId(), newPauseBeginTime, newPauseEndTime, timeDifference, true);
                 long rowId = editFragmentViewModel.insertPauseTime(newPauseTime);
                 if (rowId > 0) {
@@ -148,9 +153,14 @@ public class EditFragment extends Fragment {
                 newPauseTimeBegin.add(Calendar.SECOND, (int) differenceBetweenRecords);
                 Calendar newPauseTimeEnd = Calendar.getInstance();
                 newPauseTimeEnd.setTimeInMillis(newPauseTimeBegin.getTimeInMillis());
-                newPauseTimeEnd.add(Calendar.SECOND, 1);
+                newPauseTimeEnd.add(Calendar.SECOND, 2);
                 long timeDifference = Support.calculateDifference(newPauseTimeBegin.getTimeInMillis(), newPauseTimeEnd.getTimeInMillis());
+                long totalTime = workTime.getWorkTime();
+                totalTime -= timeDifference;
+                workTime.setWorkTime(totalTime);
+                editFragmentViewModel.updateWorkTime(workTime);
                 PauseTime newPauseTime = new PauseTime(workTime.getId(), newPauseTimeBegin, newPauseTimeEnd, timeDifference, true);
+                totalTimeTextView.setText(Support.convertTimeToString(workTime.getWorkTime()));
                 long rowId = editFragmentViewModel.insertPauseTime(newPauseTime);
                 if (rowId > 0) {
                     Toast.makeText(getContext(), "Insertion confirmed", Toast.LENGTH_SHORT).show();

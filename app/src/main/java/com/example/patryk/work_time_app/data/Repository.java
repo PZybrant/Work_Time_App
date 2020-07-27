@@ -3,7 +3,6 @@ package com.example.patryk.work_time_app.data;
 import android.app.Application;
 
 import androidx.lifecycle.LiveData;
-import androidx.room.Room;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -86,21 +85,9 @@ public class Repository {
         return rowDeleted;
     }
 
-    public List<WorkTime> getAllWorkTimes() {
-        Callable<List<WorkTime>> callable = () -> mWorkTimeDAO.getAll();
+    public LiveData<List<WorkTime>> getAllWorkTimes() {
 
-        Future<List<WorkTime>> future = WorkTimeDatabase.databaseExecutor.submit(callable);
-
-        List<WorkTime> strings = new ArrayList<>();
-
-        try {
-            strings = future.get();
-        } catch (InterruptedException e1) {
-            e1.printStackTrace();
-        } catch (ExecutionException e2) {
-            e2.printStackTrace();
-        }
-        return strings;
+        return mWorkTimeDAO.getAll();
 
     }
 

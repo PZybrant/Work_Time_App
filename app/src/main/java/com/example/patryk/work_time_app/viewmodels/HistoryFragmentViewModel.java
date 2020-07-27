@@ -30,17 +30,12 @@ public class HistoryFragmentViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<WorkTime>> getWorkTimeRecordList() {
-        return this.workTimeListLD;
+        return repository.getAllWorkTimes();
     }
 
-    public void setWorkTimeListWithAllRecords() {
-        workTimeRecordList = repository.getAllWorkTimes();
-        workTimeListLD.setValue(workTimeRecordList);
-    }
+    public LiveData<List<WorkTime>> setTimeRecordListWithSpecifiedDate(String d1, String d2) {
+        return repository.getWorkWithSpecifiedDateLiveData(d1, d2);
 
-    public void setTimeRecordListWithSpecifiedDate(String d1, String d2) {
-        workTimeRecordList = repository.getWorkWithSpecifiedDate(d1, d2);
-        workTimeListLD.setValue(workTimeRecordList);
     }
 
     public List<WorkTime> getTimeRecordListWithSpecifiedDate(String d1, String d2) {

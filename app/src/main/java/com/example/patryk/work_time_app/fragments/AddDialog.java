@@ -22,13 +22,20 @@ import java.util.Locale;
 
 public class AddDialog extends DialogFragment {
 
+    public interface AddDialogListener {
+        void onApplyButtonClick(WorkTime newWorkTime);
+    }
+
     private Button applyButton;
     private HistoryFragmentViewModel historyViewModel;
     private List<WorkTime> specifiedWorkTimeRecordList;
     private Calendar newTime, rangeFrom, rangeTo;
+    private WorkTime newWorkTime;
     private boolean canBeCreated;
+    private AddDialogListener listener;
 
-    public AddDialog(HistoryFragmentViewModel viewModel) {
+    public AddDialog(AddDialogListener listener, HistoryFragmentViewModel viewModel) {
+        this.listener = listener;
         this.historyViewModel = viewModel;
     }
 
@@ -94,8 +101,9 @@ public class AddDialog extends DialogFragment {
 
         applyButton.setOnClickListener(v -> {
             newTime.set(Calendar.MILLISECOND, 0);
-            WorkTime newWorkTime = new WorkTime(newTime, newTime, 0, true);
+            newWorkTime = new WorkTime(newTime, newTime, 0, true);
             historyViewModel.insertWorkTime(newWorkTime);
+            listener.onApplyButtonClick(newWorkTime);
             dismiss();
         });
 

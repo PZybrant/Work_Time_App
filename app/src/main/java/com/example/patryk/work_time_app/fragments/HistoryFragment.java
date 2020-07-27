@@ -45,12 +45,6 @@ public class HistoryFragment extends Fragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        viewModel.setWorkTimeListWithAllRecords();
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_history, container, false);
 
@@ -65,7 +59,7 @@ public class HistoryFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(historyAdapter);
 
-        viewModel.setWorkTimeListWithAllRecords();
+
         viewModel.getWorkTimeRecordList().observe(getViewLifecycleOwner(), list -> {
             historyAdapter.setTimes(list);
             long totalWorkTime = 0;
@@ -74,6 +68,7 @@ public class HistoryFragment extends Fragment {
             }
             totalTimeTextView.setText(Support.convertTimeToString(totalWorkTime));
         });
+
 
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
             @Override
@@ -112,26 +107,50 @@ public class HistoryFragment extends Fragment {
             }
         }).attachToRecyclerView(recyclerView);
 
-        filterButton.setOnClickListener(view1 -> {
+        filterButton.setOnClickListener(v -> {
             DialogFragment dialogFragment = new FilterDialog(filterDialogFragmentListener);
             dialogFragment.show(getActivity().getSupportFragmentManager(), getTag());
             HistoryFragment.this.onPause();
         });
 
-        resetButton.setOnClickListener(view1 -> viewModel.setWorkTimeListWithAllRecords());
+        resetButton.setOnClickListener(v -> {
+            viewModel.getWorkTimeRecordList().observe(getViewLifecycleOwner(), list -> {
+                historyAdapter.setTimes(list);
+                long totalWorkTime = 0;
+                for (WorkTime wt : list) {
+                    totalWorkTime += wt.getWorkTime();
+                }
+                totalTimeTextView.setText(Support.convertTimeToString(totalWorkTime));
+            });
+        });
 
-        addButton.setOnClickListener(view1 -> {
-            DialogFragment addDialog = new AddDialog(viewModel);
+        addButton.setOnClickListener(v -> {
+            DialogFragment addDialog = new AddDialog(addDialogListener, viewModel);
             addDialog.show(getParentFragmentManager(), getTag());
         });
         return view;
     }
 
+    private AddDialog.AddDialogListener addDialogListener = newWorkTime -> {
+        FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
+        EditFragment editFragment = new EditFragment(newWorkTime);
+        fragmentTransaction.replace(R.id.fragmentContainer, editFragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    };
+
     private FilterDialog.FilterDialogFragmentListener filterDialogFragmentListener = (date1, date2) -> {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
         String fDate = dateFormat.format(date1.getTime());
         String tDate = dateFormat.format(date2.getTime());
-        viewModel.setTimeRecordListWithSpecifiedDate(fDate, tDate);
+        viewModel.setTimeRecordListWithSpecifiedDate(fDate, tDate).observe(this, list -> {
+            historyAdapter.setTimes(list);
+            long totalWorkTime = 0;
+            for (WorkTime wt : list) {
+                totalWorkTime += wt.getWorkTime();
+            }
+            totalTimeTextView.setText(Support.convertTimeToString(totalWorkTime));
+        });
     };
 
     private HistoryAdapter.HistoryAdapterListener adapterListener = mWorkTime -> {
