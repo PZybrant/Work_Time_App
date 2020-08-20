@@ -7,14 +7,13 @@ import android.content.SharedPreferences;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.preference.PreferenceManager;
 
 import com.example.patryk.work_time_app.CountUpTimer;
 import com.example.patryk.work_time_app.R;
 import com.example.patryk.work_time_app.Support;
+import com.example.patryk.work_time_app.data.PauseTimeRecord;
 import com.example.patryk.work_time_app.data.Repository;
-import com.example.patryk.work_time_app.data.PauseTime;
-import com.example.patryk.work_time_app.data.WorkTime;
+import com.example.patryk.work_time_app.data.WorkTimeRecord;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -43,27 +42,27 @@ public class TimerFragmentViewModel extends AndroidViewModel {
         initializeData();
     }
 
-    public long insertWorkTime(WorkTime workTime) {
-        return mRepository.insertWorkTime(workTime);
+    public long insertWorkTime(WorkTimeRecord workTimeRecord) {
+        return mRepository.insertWorkTime(workTimeRecord);
     }
 
-    public int updateWorkTime(WorkTime workTime) {
-        return mRepository.updateWorkTime(workTime);
+    public int updateWorkTime(WorkTimeRecord workTimeRecord) {
+        return mRepository.updateWorkTime(workTimeRecord);
     }
 
-    public WorkTime getOneWorkTime(long id) {
+    public WorkTimeRecord getOneWorkTime(long id) {
         return mRepository.getOneWorkTime(id);
     }
 
-    public long insertPauseTime(PauseTime pauseTime) {
-        return mRepository.insertPauseTime(pauseTime);
+    public long insertPauseTime(PauseTimeRecord pauseTimeRecord) {
+        return mRepository.insertPauseTime(pauseTimeRecord);
     }
 
-    public int updatePauseTime(PauseTime pauseTime) {
-        return mRepository.updatePauseTime(pauseTime);
+    public int updatePauseTime(PauseTimeRecord pauseTimeRecord) {
+        return mRepository.updatePauseTime(pauseTimeRecord);
     }
 
-    public PauseTime getOnePauseTime(long id) {
+    public PauseTimeRecord getOnePauseTime(long id) {
         return mRepository.getOnePauseTime(id);
     }
 

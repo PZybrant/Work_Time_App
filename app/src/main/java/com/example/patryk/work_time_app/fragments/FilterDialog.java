@@ -81,7 +81,7 @@ public class FilterDialog extends DialogFragment {
                 }
                 toTextView.setText(dateFormat.format(rangeTo.getTimeInMillis()));
                 applyButton.setEnabled(true);
-                applyButton.setTextColor(getResources().getColor(R.color.colorPrimaryDark, null));
+                applyButton.setTextColor(getResources().getColor(R.color.lightThemeColorPrimaryVariant, null));
             }
         });
 

@@ -13,7 +13,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.patryk.work_time_app.R;
 import com.example.patryk.work_time_app.Support;
-import com.example.patryk.work_time_app.data.WorkTime;
+import com.example.patryk.work_time_app.data.WorkTimeRecord;
 import com.example.patryk.work_time_app.viewmodels.HistoryFragmentViewModel;
 
 import java.util.Calendar;
@@ -23,14 +23,14 @@ import java.util.Locale;
 public class AddDialog extends DialogFragment {
 
     public interface AddDialogListener {
-        void onApplyButtonClick(WorkTime newWorkTime);
+        void onApplyButtonClick(WorkTimeRecord newWorkTimeRecord);
     }
 
     private Button applyButton;
     private HistoryFragmentViewModel historyViewModel;
-    private List<WorkTime> specifiedWorkTimeRecordList;
+    private List<WorkTimeRecord> specifiedWorkTimeRecordRecordList;
     private Calendar newTime, rangeFrom, rangeTo;
-    private WorkTime newWorkTime;
+    private WorkTimeRecord newWorkTimeRecord;
     private boolean canBeCreated;
     private AddDialogListener listener;
 
@@ -47,7 +47,7 @@ public class AddDialog extends DialogFragment {
         DatePicker datePicker = view.findViewById(R.id.dialog_edit_picker_date);
         NumberPicker hourPicker = view.findViewById(R.id.dialog_edit_picker_hour);
         NumberPicker minutePicker = view.findViewById(R.id.dialog_edit_picker_minute);
-        NumberPicker secondPicker = view.findViewById(R.id.dialog_edit_picker_second);
+//        NumberPicker secondPicker = view.findViewById(R.id.dialog_edit_picker_second);
         Button cancelButton = view.findViewById(R.id.dialog_edit_button_cancel);
         applyButton = view.findViewById(R.id.dialog_edit_button_apply);
 
@@ -55,8 +55,8 @@ public class AddDialog extends DialogFragment {
         hourPicker.setMaxValue(23);
         minutePicker.setMinValue(0);
         minutePicker.setMaxValue(59);
-        secondPicker.setMinValue(0);
-        secondPicker.setMaxValue(59);
+//        secondPicker.setMinValue(0);
+//        secondPicker.setMaxValue(59);
 
 
         rangeFrom = Calendar.getInstance();
@@ -77,37 +77,44 @@ public class AddDialog extends DialogFragment {
         datePicker.init(newTime.get(Calendar.YEAR), newTime.get(Calendar.MONTH), newTime.get(Calendar.DAY_OF_MONTH), onDateChangedListener);
         hourPicker.setValue(newTime.get(Calendar.HOUR_OF_DAY));
         minutePicker.setValue(newTime.get(Calendar.MINUTE));
-        secondPicker.setValue(newTime.get(Calendar.SECOND));
+//        secondPicker.setValue(newTime.get(Calendar.SECOND));
 
         hourPicker.setOnValueChangedListener((picker, oldVal, newVal) -> {
             newTime.set(Calendar.HOUR_OF_DAY, newVal);
-            canBeCreated = historyViewModel.canBeCreated(newTime, specifiedWorkTimeRecordList);
+            canBeCreated = historyViewModel.canBeCreated(newTime, specifiedWorkTimeRecordRecordList);
             enableApplyButton(canBeCreated);
         });
 
         minutePicker.setOnValueChangedListener((picker, oldVal, newVal) -> {
             newTime.set(Calendar.MINUTE, newVal);
-            canBeCreated = historyViewModel.canBeCreated(newTime, specifiedWorkTimeRecordList);
+            canBeCreated = historyViewModel.canBeCreated(newTime, specifiedWorkTimeRecordRecordList);
             enableApplyButton(canBeCreated);
         });
 
-        secondPicker.setOnValueChangedListener((picker, oldVal, newVal) -> {
-            newTime.set(Calendar.SECOND, newVal);
-            canBeCreated = historyViewModel.canBeCreated(newTime, specifiedWorkTimeRecordList);
-            enableApplyButton(canBeCreated);
-        });
+//        secondPicker.setOnValueChangedListener((picker, oldVal, newVal) -> {
+//            newTime.set(Calendar.SECOND, newVal);
+//            canBeCreated = historyViewModel.canBeCreated(newTime, specifiedWorkTimeRecordList);
+//            enableApplyButton(canBeCreated);
+//        });
 
         cancelButton.setOnClickListener(v -> dismiss());
 
         applyButton.setOnClickListener(v -> {
-            newTime.set(Calendar.MILLISECOND, 0);
-            newWorkTime = new WorkTime(newTime, newTime, 0, true);
-            historyViewModel.insertWorkTime(newWorkTime);
-            listener.onApplyButtonClick(newWorkTime);
+            newTime.set(Calendar.SECOND, 1);
+            newTime.set(Calendar.MILLISECOND, 1);
+            Calendar newEndTime = Calendar.getInstance();
+            newEndTime.setTimeInMillis(newTime.getTimeInMillis());
+            newEndTime.add(Calendar.MINUTE, 1);
+            newEndTime.set(Calendar.SECOND, 1);
+            newEndTime.set(Calendar.MILLISECOND, 1);
+            long difference = Support.calculateDifference(newTime.getTimeInMillis(), newEndTime.getTimeInMillis());
+            newWorkTimeRecord = new WorkTimeRecord(newTime, newEndTime, difference, true);
+            historyViewModel.insertWorkTime(newWorkTimeRecord);
+            listener.onApplyButtonClick(newWorkTimeRecord);
             dismiss();
         });
 
-        canBeCreated = historyViewModel.canBeCreated(newTime, specifiedWorkTimeRecordList);
+        canBeCreated = historyViewModel.canBeCreated(newTime, specifiedWorkTimeRecordRecordList);
         enableApplyButton(canBeCreated);
 
         return view;
@@ -128,13 +135,13 @@ public class AddDialog extends DialogFragment {
     };
 
     private void updateTimeList() {
-        specifiedWorkTimeRecordList = historyViewModel.getTimeRecordListWithSpecifiedDate(Support.convertDateToString(rangeFrom.getTime()), Support.convertDateToString(rangeTo.getTime()));
+        specifiedWorkTimeRecordRecordList = historyViewModel.getTimeRecordListWithSpecifiedDate(Support.convertDateToString(rangeFrom.getTime()), Support.convertDateToString(rangeTo.getTime()));
     }
 
     private void enableApplyButton(boolean enable) {
         if (enable) {
             applyButton.setEnabled(true);
-            applyButton.setTextColor(getResources().getColor(R.color.colorPrimary, null));
+            applyButton.setTextColor(getResources().getColor(R.color.lightThemeColorPrimary, null));
         } else {
             applyButton.setEnabled(false);
             applyButton.setTextColor(Color.GRAY);

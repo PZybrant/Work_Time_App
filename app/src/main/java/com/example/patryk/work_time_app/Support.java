@@ -19,22 +19,20 @@ public abstract class Support {
         long hours = minutes / 60;
         minutes = minutes % 60;
 
-        String s = (seconds < 10) ? ("0" + seconds) : String.valueOf(seconds);
         String m = (minutes < 10) ? ("0" + minutes) : String.valueOf(minutes);
         String h = (hours < 10) ? ("0" + hours) : String.valueOf(hours);
 
-        return String.format("%s:%s:%s", h, m, s);
+        return String.format("%s:%s", h, m);
     }
 
     public static String convertDateToString(Date date) {
         try {
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
             return dateFormat.format(date);
 
         } catch (Exception e) {
             e.printStackTrace();
-
             return null;
         }
     }
@@ -42,7 +40,7 @@ public abstract class Support {
     public static Calendar convertFromString(String s) {
         Calendar calendar = Calendar.getInstance(TimeZone.getDefault());
         try {
-            DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
             df.setLenient(false);
             Date tempDate = df.parse(s);
             calendar.setTime(tempDate);
@@ -68,7 +66,7 @@ public abstract class Support {
 
     public static String makeTimeText(Calendar calendar) {
         try {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss", Locale.getDefault());
+            SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
             return dateFormat.format(calendar.getTime());
 
         } catch (Exception e) {

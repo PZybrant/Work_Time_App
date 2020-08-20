@@ -1,12 +1,107 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppThemeLight" parent="Theme.MaterialComponents.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-        <item name="android:navigationBarColor">@color/colorPrimaryDark</item>
+        <item name="colorPrimary">@color/lightThemeColorPrimary</item>
+        <item name="colorPrimaryVariant">@color/lightThemeColorPrimaryVariant</item>
+        <item name="colorOnPrimary">@color/lightThemeOnPrimary</item>
+        <item name="colorSecondary">@color/lightThemeColorSecondary</item>
+        <item name="colorSecondaryVariant">@color/lightThemeColorSecondaryVariant</item>
+        <item name="colorOnSecondary">@color/lightThemeOnSecondary</item>
+        <item name="background">@color/lightThemeBackground</item>
+        <item name="colorOnBackground">@color/lightThemeOnBackground</item>
+        <item name="colorSurface">@color/lightThemeColorSurface</item>
+        <item name="colorOnSurface">@color/lightThemeOnSurface</item>
+        <item name="android:navigationBarColor">?attr/colorPrimary</item>
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="iconTint">@color/iconColorDark</item>
+        <item name="android:textColor">@color/lightThemeOnBackground</item>
+        <item name="android:textColorSecondary">@color/lightThemeOnBackground</item>
+    </style>
+
+    <style name="myOutlinedButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="android:textSize">14sp</item>
+        <item name="autoSizeMinTextSize">14sp</item>
+        <item name="autoSizeMaxTextSize">16sp</item>
+        <item name="android:textColor">?attr/colorSecondary</item>
+        <item name="strokeColor">?attr/colorAccent</item>
+        <item name="backgroundTint">?attr/background</item>
+        <item name="android:elevation">4dp</item>
+
+        <item name="iconGravity">textEnd</item>
+        <item name="iconTint">?attr/colorAccent</item>
+        <item name="iconPadding">0dp</item>
+    </style>
+
+    <style name="myButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:textSize">14sp</item>
+        <item name="autoSizeMinTextSize">14sp</item>
+        <item name="autoSizeMaxTextSize">16sp</item>
+        <item name="android:textColor">?attr/colorOnSecondary</item>
+        <item name="backgroundTint">?attr/colorAccent</item>
+        <item name="android:elevation">4dp</item>
+    </style>
+
+    <style name="ShapeAppearance.WorkTimeRecorder.SmallComponent.TimerFragment" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerFamily">cut</item>
+        <item name="cornerSize">12dp</item>
+    </style>
+
+    <style name="ShapeAppearance.WorkTimeRecorder.SmallComponent.EditFragment" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerFamily">cut</item>
+        <item name="cornerSize">12dp</item>
+    </style>
+
+    <style name="ShapeAppearance.WorkTimeRecorder.SmallComponent.AddButton" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerFamily">cut</item>
+        <item name="cornerSize">20dp</item>
+    </style>
+
+    <style name="ShapeAppearance.WorkTimeRecorder.SmallComponent.DeleteButton" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerFamily">cut</item>
+        <item name="cornerSize">8dp</item>
+    </style>
+
+    <style name="myFABShape" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+        <item name="cornerFamily">cut</item>
+        <item name="cornerSize">18dp</item>
+    </style>
+
+    <style name="myPicker" parent="Theme.MaterialComponents.Light">
+        <item name="colorControlNormal">@android:color/black</item>
+        <item name="android:backgroundTint">?attr/background</item>
+        <item name="android:textColorPrimary">?attr/colorSecondary</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="dialogShape" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerFamily">cut</item>
+        <item name="cornerSize">18dp</item>
+    </style>
+
+
+    <style name="calendarViewTextAppearance" parent="TextAppearance.MaterialComponents.Body2">
+        <item name="color">#FFFFFF</item>
+    </style>
+
+    <style name="AppThemeDark" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/darkThemeColorPrimary</item>
+        <item name="colorPrimaryVariant">@color/darkThemeColorPrimaryVariant</item>
+        <item name="colorOnPrimary">@color/darkThemeOnPrimary</item>
+        <item name="colorSecondary">@color/darkThemeColorSecondary</item>
+        <item name="colorSecondaryVariant">@color/darkThemeColorSecondaryVariant</item>
+        <item name="colorOnSecondary">@color/darkThemeOnSecondary</item>
+        <item name="background">@color/darkThemeBackground</item>
+        <item name="colorOnBackground">@color/darkThemeOnBackground</item>
+        <item name="colorSurface">@color/darkThemeColorSurface</item>
+        <item name="colorOnSurface">@color/darkThemeOnSurface</item>
+        <item name="android:navigationBarColor">?attr/colorPrimary</item>
+        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+        <item name="iconTint">@color/iconColorLight</item>
+        <item name="android:textColor">@color/darkThemeOnBackground</item>
+        <item name="android:textColorSecondary">@color/darkThemeOnBackground</item>
     </style>
 
 </resources>

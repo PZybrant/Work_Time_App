@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:elevation="4dp"
     tools:layout_editor_absoluteY="25dp">
 
     <ImageView
@@ -11,6 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
+        android:tint="@color/red"
         app:layout_constraintBottom_toBottomOf="@+id/row_edit_view_pause_begin"
         app:layout_constraintEnd_toStartOf="@+id/row_edit_view_pause_begin"
         app:layout_constraintTop_toTopOf="@+id/row_edit_view_pause_begin"
@@ -21,30 +23,34 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
+        android:tint="@color/yellow"
         app:layout_constraintBottom_toBottomOf="@+id/row_edit_view_pause_end"
         app:layout_constraintEnd_toStartOf="@+id/row_edit_view_pause_end"
         app:layout_constraintTop_toTopOf="@+id/row_edit_view_pause_end"
         app:srcCompat="@drawable/ic_play_arrow_24dp" />
 
-    <ImageButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/row_edit_ib_delete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/myOutlinedButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_marginEnd="8dp"
-        android:background="@color/transparent"
-        android:minWidth="48dp"
-        android:minHeight="48dp"
+        android:insetTop="10dp"
+        android:insetBottom="10dp"
+        app:icon="@drawable/ic_delete_24dp"
+        app:iconSize="24dp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView2"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/imageView2"
         app:layout_constraintTop_toTopOf="@+id/imageView2"
-        app:layout_constraintVertical_bias="0.458"
-        app:srcCompat="@drawable/ic_delete_24dp" />
+        app:shapeAppearance="@style/ShapeAppearance.WorkTimeRecorder.SmallComponent.DeleteButton" />
 
     <LinearLayout
         android:id="@+id/row_edit_view_pause_begin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:background="@drawable/edit_view_background"
+        android:elevation="8dp"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -54,15 +60,31 @@
             android:id="@+id/row_edit_view_pause_begin_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginRight="4dp"
+            android:background="@android:color/transparent"
+            android:textColor="?attr/colorOnBackground"
             android:textAlignment="viewStart"
+            android:textSize="14sp"
+            app:autoSizeMinTextSize="14sp"
+            app:autoSizeMaxTextSize="16sp"
             tools:text="2020, January 15" />
 
         <TextView
             android:id="@+id/row_edit_view_pause_begin_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginBottom="4dp"
+            android:background="@android:color/transparent"
+            android:textColor="?attr/colorOnBackground"
+            android:gravity="center"
             android:textAlignment="center"
             android:textSize="16sp"
+            app:autoSizeMinTextSize="16sp"
+            app:autoSizeMaxTextSize="18sp"
             tools:text="@tools:sample/date/hhmmss" />
 
     </LinearLayout>
@@ -71,25 +93,41 @@
         android:id="@+id/row_edit_view_pause_end"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/edit_view_background"
+        android:elevation="8dp"
         android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/row_edit_view_pause_begin"
+        app:layout_constraintStart_toStartOf="@+id/row_edit_view_pause_begin"
         app:layout_constraintTop_toBottomOf="@+id/imageView2">
 
         <TextView
             android:id="@+id/row_edit_view_pause_end_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginRight="4dp"
             android:textAlignment="viewStart"
+            android:textColor="?attr/colorOnBackground"
+            android:textSize="14sp"
+            app:autoSizeMinTextSize="14sp"
+            app:autoSizeMaxTextSize="16sp"
             tools:text="2020, January 15" />
 
         <TextView
             android:id="@+id/row_edit_view_pause_end_time"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginBottom="4dp"
+            android:gravity="center"
             android:textAlignment="center"
+            android:textColor="?attr/colorOnBackground"
             android:textSize="16sp"
+            app:autoSizeMinTextSize="16sp"
+            app:autoSizeMaxTextSize="18sp"
             tools:text="@tools:sample/date/hhmmss" />
 
     </LinearLayout>
@@ -98,7 +136,7 @@
         android:id="@+id/imageView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="@+id/row_edit_view_pause_begin"
         app:layout_constraintStart_toStartOf="@+id/row_edit_view_pause_begin"
         app:layout_constraintTop_toBottomOf="@+id/row_edit_view_pause_begin"
@@ -109,23 +147,32 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:textColor="?attr/colorOnBackground"
         android:textSize="12sp"
+        app:autoSizeMinTextSize="12sp"
+        app:autoSizeMaxTextSize="14sp"
         app:layout_constraintBottom_toBottomOf="@+id/imageView2"
         app:layout_constraintStart_toEndOf="@+id/imageView2"
         app:layout_constraintTop_toTopOf="@+id/imageView2"
         tools:text="@tools:sample/date/hhmmss" />
 
-    <ImageButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/row_edit_ib_add"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:background="@color/transparent"
+        style="@style/myOutlinedButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="4dp"
+        android:contentDescription="@string/edit_add_description"
+        android:insetLeft="4dp"
+        android:insetTop="4dp"
+        android:insetRight="4dp"
+        android:insetBottom="4dp"
+        android:textAlignment="center"
+        app:icon="@drawable/ic_add_24dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/row_edit_view_pause_end"
+        app:layout_constraintStart_toStartOf="@+id/row_edit_view_pause_end"
         app:layout_constraintTop_toBottomOf="@+id/row_edit_view_pause_end"
-        app:srcCompat="@drawable/ic_add_24dp" />
+        app:shapeAppearance="@style/ShapeAppearance.WorkTimeRecorder.SmallComponent.AddButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

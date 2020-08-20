@@ -2,11 +2,14 @@ package com.example.patryk.work_time_app.fragments;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Icon;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -18,13 +21,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.patryk.work_time_app.R;
 import com.example.patryk.work_time_app.Support;
 import com.example.patryk.work_time_app.adapters.TimerAdapter;
-import com.example.patryk.work_time_app.data.PauseTime;
+import com.example.patryk.work_time_app.data.PauseTimeRecord;
+import com.example.patryk.work_time_app.data.WorkTimeRecord;
 import com.example.patryk.work_time_app.viewmodels.TimerFragmentViewModel;
-import com.example.patryk.work_time_app.data.WorkTime;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.util.GregorianCalendar;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.TimeZone;
 
 import static com.example.patryk.work_time_app.R.string.*;
@@ -39,15 +43,17 @@ public class TimerFragment extends Fragment {
     private long actualPauseTime;
     private boolean isWorkFinished = false;
     private boolean isPaused = false;
-    private WorkTime workTime;
-    private PauseTime pauseTime;
+    private WorkTimeRecord workTimeRecord;
+    private PauseTimeRecord pauseTimeRecord;
 
     private SharedPreferences sharedPreferences;
     private ProgressBar hoursProgressBar, minutesProgressBar, secondsProgressBar;
     private TextView hoursTextView, minutesTextView, secondsTextView;
+    private ImageView registryTypeImageView;
     private Button startButton, pauseResumeButton, stopButton;
     private TimerAdapter recyclerviewAdapter;
     private TimerFragmentViewModel fragmentViewModel;
+    private Drawable enterWorkIcon, endWorkIcon, startPauseIcon, stopPauseIcon;
 
     @Override
     public void onCreate(Bundle saveInstanceState) {
@@ -66,7 +72,17 @@ public class TimerFragment extends Fragment {
             secondsValue = seconds;
             setClockSeconds();
         });
+        enterWorkIcon = requireContext().getDrawable(R.drawable.ic_exit_to_app_24dp);
+        enterWorkIcon.setTint(getResources().getColor(R.color.green, null));
 
+        endWorkIcon = requireContext().getDrawable(R.drawable.ic_exit_to_app_24dp);
+        endWorkIcon.setTint(getResources().getColor(R.color.red, null));
+
+        startPauseIcon = requireContext().getDrawable(R.drawable.ic_pause_24dp);
+        startPauseIcon.setTint(getResources().getColor(R.color.red, null));
+
+        stopPauseIcon = requireContext().getDrawable(R.drawable.ic_play_arrow_24dp);
+        stopPauseIcon.setTint(getResources().getColor(R.color.yellow, null));
     }
 
     @Override
@@ -83,12 +99,12 @@ public class TimerFragment extends Fragment {
         mWorkId = sharedPreferences.getLong("work_id", -1);
         mPauseId = sharedPreferences.getLong("pause_id", -1);
         if (mWorkId > 0) {
-            workTime = fragmentViewModel.getOneWorkTime(mWorkId);
+            workTimeRecord = fragmentViewModel.getOneWorkTime(mWorkId);
             isWorkFinished = false;
             isPaused = false;
             actualPauseTime = sharedPreferences.getLong("totalPauseTimes", 0);
             if (mPauseId > 0) {
-                pauseTime = fragmentViewModel.getOnePauseTime(mPauseId);
+                pauseTimeRecord = fragmentViewModel.getOnePauseTime(mPauseId);
                 setClockValue();
                 setProgressBars(hoursValue, minutesValue, secondsValue);
                 pauseResumeButton.setText(R.string.timer_resume);
@@ -169,9 +185,9 @@ public class TimerFragment extends Fragment {
 
     private void startButtonClick() {
         fragmentViewModel.clearRecordList();
-        workTime = new WorkTime();
-        mWorkId = fragmentViewModel.insertWorkTime(workTime);
-        fragmentViewModel.addToRecordList(workTime.getShiftBeginText());
+        workTimeRecord = new WorkTimeRecord();
+        mWorkId = fragmentViewModel.insertWorkTime(workTimeRecord);
+        fragmentViewModel.addToRecordList(workTimeRecord.getShiftBeginText());
         isWorkFinished = false;
         fragmentViewModel.startClock(true);
         Snackbar.make(getActivity().findViewById(R.id.fragmentContainer), "Success insert.", Snackbar.LENGTH_LONG).show();
@@ -182,9 +198,9 @@ public class TimerFragment extends Fragment {
 
     private void pauseResumeButtonClick() {
         if (!isPaused) {
-            pauseTime = new PauseTime(mWorkId);
-            mPauseId = fragmentViewModel.insertPauseTime(pauseTime);
-            fragmentViewModel.addToRecordList(pauseTime.getPauseBeginText());
+            pauseTimeRecord = new PauseTimeRecord(mWorkId);
+            mPauseId = fragmentViewModel.insertPauseTime(pauseTimeRecord);
+            fragmentViewModel.addToRecordList(pauseTimeRecord.getPauseBeginText());
             isPaused = true;
             fragmentViewModel.stopClock();
             pauseResumeButton.setText(R.string.timer_resume);
@@ -196,18 +212,18 @@ public class TimerFragment extends Fragment {
     }
 
     private void stopButtonClick() {
-        workTime.makeShiftEndTimestamp();
-        long timeDifference = workTime.getWorkTime();
+        workTimeRecord.makeShiftEndTimestamp();
+        long timeDifference = workTimeRecord.getWorkTime();
         isWorkFinished = true;
 
         if (isPaused) {
             finishPause();
         }
-        fragmentViewModel.addToRecordList(workTime.getShiftEndText());
+        fragmentViewModel.addToRecordList(workTimeRecord.getShiftEndText());
         timeDifference -= actualPauseTime;
-        workTime.setWorkTime(timeDifference);
-        workTime.setFinished(true);
-        fragmentViewModel.updateWorkTime(workTime);
+        workTimeRecord.setWorkTime(timeDifference);
+        workTimeRecord.setFinished(true);
+        fragmentViewModel.updateWorkTime(workTimeRecord);
 
         mWorkId = 0;
 
@@ -223,11 +239,11 @@ public class TimerFragment extends Fragment {
     }
 
     private void finishPause() {
-        pauseTime.makePauseEndTimestamp();
-        actualPauseTime += pauseTime.getPauseTime();
-        pauseTime.setFinished(true);
-        fragmentViewModel.updatePauseTime(pauseTime);
-        fragmentViewModel.addToRecordList(pauseTime.getPauseEndText());
+        pauseTimeRecord.makePauseEndTimestamp();
+        actualPauseTime += pauseTimeRecord.getPauseTime();
+        pauseTimeRecord.setFinished(true);
+        fragmentViewModel.updatePauseTime(pauseTimeRecord);
+        fragmentViewModel.addToRecordList(pauseTimeRecord.getPauseEndText());
         mPauseId = 0;
         isPaused = false;
     }

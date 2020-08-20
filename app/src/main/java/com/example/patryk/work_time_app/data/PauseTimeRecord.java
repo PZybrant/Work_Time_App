@@ -1,7 +1,6 @@
 package com.example.patryk.work_time_app.data;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
@@ -16,13 +15,13 @@ import java.util.Locale;
 import static androidx.room.ForeignKey.CASCADE;
 
 @Entity(tableName = "pauseTimes")
-public class PauseTime {
+public class PauseTimeRecord {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "pauseId")
     private long mId;
 
-    @ForeignKey(entity = WorkTime.class, parentColumns = "workId", childColumns = "workPauseId", onDelete = CASCADE, onUpdate = CASCADE)
+    @ForeignKey(entity = WorkTimeRecord.class, parentColumns = "workId", childColumns = "workPauseId", onDelete = CASCADE, onUpdate = CASCADE)
     @ColumnInfo(name = "workPauseId")
     private long mWorkId;
 
@@ -39,14 +38,14 @@ public class PauseTime {
     @ColumnInfo(name = "finished")
     private boolean mFinished;
 
-    public PauseTime(long workId) {
+    public PauseTimeRecord(long workId) {
         this.mWorkId = workId;
         this.mPauseBegin = Calendar.getInstance(Locale.getDefault());
         this.mFinished = false;
     }
 
     @Ignore
-    public PauseTime(long mWorkId, @NonNull Calendar mPauseBegin, Calendar mPauseEnd, long mPauseTime, boolean mFinished) {
+    public PauseTimeRecord(long mWorkId, @NonNull Calendar mPauseBegin, Calendar mPauseEnd, long mPauseTime, boolean mFinished) {
         this.mWorkId = mWorkId;
         this.mPauseBegin = mPauseBegin;
         this.mPauseEnd = mPauseEnd;

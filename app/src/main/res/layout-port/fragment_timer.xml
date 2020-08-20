@@ -3,15 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/relativeLayout"
-    android:background="@color/transparent"
     android:layout_height="match_parent"
-    android:layout_width="match_parent">
+    android:layout_width="match_parent"
+    android:backgroundTint="?attr/background">
 
     <ProgressBar
         android:id="@+id/fragment_timer_pb_hour"
-        style="?android:attr/progressBarStyleHorizontal"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:background="@drawable/progress_background"
-        android:backgroundTint="#9E9E9E"
         android:indeterminate="false"
         android:layout_height="0dp"
         android:layout_width="0dp"
@@ -20,7 +19,7 @@
         android:max="24"
         android:progress="0"
         android:progressDrawable="@drawable/progress_drawable"
-        android:progressTint="#F77F42"
+        android:progressTint="@color/progressBarHour"
         android:rotation="90"
         android:visibility="visible"
         app:layout_constrainedHeight="true"
@@ -34,11 +33,13 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
         app:layout_constraintWidth_max="350dp"
-        app:layout_constraintWidth_min="250dp" />
+        app:layout_constraintWidth_min="250dp"
+
+        />
 
     <ProgressBar
         android:id="@+id/fragment_timer_pb_minute"
-        style="@android:style/Widget.Material.Light.ProgressBar.Horizontal"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="24dp"
@@ -46,11 +47,10 @@
         android:layout_marginStart="56dp"
         android:layout_marginTop="24dp"
         android:background="@drawable/progress_background"
-        android:backgroundTint="#9E9E9E"
         android:max="60"
         android:progress="0"
         android:progressDrawable="@drawable/progress_drawable"
-        android:progressTint="#67BDE6"
+        android:progressTint="@color/progressBarMinute"
         android:rotation="90"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -64,7 +64,7 @@
 
     <ProgressBar
         android:id="@+id/fragment_timer_pb_second"
-        style="@android:style/Widget.Material.Light.ProgressBar.Horizontal"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="48dp"
@@ -72,11 +72,10 @@
         android:layout_marginStart="80dp"
         android:layout_marginTop="48dp"
         android:background="@drawable/progress_background"
-        android:backgroundTint="#9E9E9E"
         android:max="60"
         android:progress="0"
         android:progressDrawable="@drawable/progress_drawable"
-        android:progressTint="#10364D"
+        android:progressTint="@color/progressBarSecond"
         android:rotation="90"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -95,8 +94,10 @@
         android:layout_marginBottom="8dp"
         android:gravity="center"
         android:text="@string/timer_hours"
-        android:textColor="#000"
+        android:textColor="?attr/colorOnBackground"
         android:textSize="14sp"
+        app:autoSizeMinTextSize="14sp"
+        app:autoSizeMaxTextSize="18sp"
         app:layout_constraintBottom_toTopOf="@+id/fragment_timer_tv_minute"
         app:layout_constraintStart_toStartOf="@+id/fragment_timer_tv_minute"
         app:layout_constraintWidth_min="100dp"
@@ -111,8 +112,10 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:gravity="center"
-        android:textColor="#000"
+        android:textColor="?attr/colorOnBackground"
         android:textSize="14sp"
+        app:autoSizeMinTextSize="14sp"
+        app:autoSizeMaxTextSize="18sp"
         android:text="@string/timer_minutes"
         app:layout_constraintBottom_toBottomOf="@+id/fragment_timer_pb_second"
         app:layout_constraintEnd_toEndOf="@+id/fragment_timer_pb_second"
@@ -129,22 +132,21 @@
         android:layout_marginTop="8dp"
         android:gravity="center"
         android:text="@string/timer_seconds"
-        android:textColor="#000"
+        android:textColor="?attr/colorOnBackground"
         android:textSize="14sp"
+        app:autoSizeMinTextSize="14sp"
+        app:autoSizeMaxTextSize="18sp"
         app:layout_constraintStart_toStartOf="@+id/fragment_timer_tv_minute"
         app:layout_constraintTop_toBottomOf="@+id/fragment_timer_tv_minute"
         tools:text="15 Seconds" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/fragment_timer_button_start"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:background="@drawable/rounded_button_normal"
-        android:backgroundTint="#67BDE6"
-        android:elevation="24dp"
         android:text="@string/timer_start"
         android:textColor="#000"
         android:textSize="14sp"
@@ -152,50 +154,53 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/fragment_timer_pb_minute"
-        app:layout_constraintWidth_max="150dp" />
+        app:layout_constraintWidth_max="150dp"
+        style="@style/myButton"
+        app:shapeAppearance="@style/ShapeAppearance.WorkTimeRecorder.SmallComponent.TimerFragment" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/fragment_timer_button_pause_resume"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
-        android:background="@drawable/rounded_button_normal"
-        android:backgroundTint="@color/colorAccent"
-        android:visibility="invisible"
-        android:elevation="24dp"
         android:text="@string/timer_pause"
         android:textColor="#000"
         android:textSize="14sp"
+        android:visibility="invisible"
         app:layout_constraintEnd_toStartOf="@+id/fragment_timer_button_stop"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/fragment_timer_pb_minute" />
+        app:layout_constraintTop_toBottomOf="@+id/fragment_timer_pb_minute"
+        style="@style/myButton"
+        app:shapeAppearance="@style/ShapeAppearance.WorkTimeRecorder.SmallComponent.TimerFragment" />
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/fragment_timer_button_stop"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="8dp"
-        android:background="@drawable/rounded_button_normal"
-        android:backgroundTint="@color/colorAccent"
-        android:visibility="invisible"
+        android:layout_marginEnd="24dp"
         android:text="@string/timer_stop"
         android:textColor="#000"
         android:textSize="14sp"
+        android:visibility="invisible"
         app:layout_constraintBaseline_toBaselineOf="@+id/fragment_timer_button_pause_resume"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/fragment_timer_button_pause_resume" />
+        app:layout_constraintStart_toEndOf="@+id/fragment_timer_button_pause_resume"
+        style="@style/myButton"
+        app:shapeAppearance="@style/ShapeAppearance.WorkTimeRecorder.SmallComponent.TimerFragment" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/fragment_timer_rv"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
-        android:background="@color/backgroundColorTransparent"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="?attr/colorSurface"
+        android:scrollbarSize="0dp"
         android:scrollbars="vertical"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -203,6 +208,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/fragment_timer_button_start"
         app:layout_constraintVertical_bias="0.0"
+        tools:itemCount="0"
         tools:listitem="@layout/item_history_fragment" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

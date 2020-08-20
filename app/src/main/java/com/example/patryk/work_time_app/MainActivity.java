@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.preference.PreferenceManager;
 
 import com.example.patryk.work_time_app.broadcast_receivers.ReminderReceiver;
 import com.example.patryk.work_time_app.fragments.HistoryFragment;
@@ -29,7 +30,21 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        SharedPreferences settingPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean isDarkModeOn = settingPreferences.getBoolean("dark_mode_switch", false);
+        if (isDarkModeOn) {
+            setTheme(R.style.AppThemeDark);
+        }
+        if (savedInstanceState != null) {
+            super.onCreate(savedInstanceState);
+        } else {
+            super.onCreate(null);
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            TimerFragment timerFragment = new TimerFragment();
+
+            fragmentTransaction.add(R.id.fragmentContainer, timerFragment);
+            fragmentTransaction.commit();
+        }
 
         registerNotificationChannels();
         checkFirstRun();
@@ -38,12 +53,6 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
-
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        TimerFragment timerFragment = new TimerFragment();
-
-        fragmentTransaction.add(R.id.fragmentContainer, timerFragment);
-        fragmentTransaction.commit();
 
         SharedPreferences preferences = getSharedPreferences(getString(R.string.shared_preference_name), MODE_PRIVATE);
         if (preferences.getLong(getString(R.string.init_date), -1) == -1) {

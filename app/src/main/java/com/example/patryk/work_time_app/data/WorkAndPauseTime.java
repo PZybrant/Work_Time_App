@@ -7,12 +7,12 @@ import java.util.List;
 
 public class WorkAndPauseTime {
     @Embedded
-    public WorkTime workTime;
+    public WorkTimeRecord workTimeRecord;
 
     @Relation(
             parentColumn = "workId",
             entityColumn = "workPauseId"
     )
-    public List<PauseTime> pauseTimes;
+    public List<PauseTimeRecord> pauseTimeRecords;
 
 }

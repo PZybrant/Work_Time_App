@@ -6,14 +6,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:backgroundTint="?attr/background"
     android:orientation="vertical">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/fragment_history_rv"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:background="@color/backgroundColorTransparent"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:scrollbarSize="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -23,17 +27,15 @@
         android:id="@+id/fragment_history_fab_add"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        android:backgroundTint="@color/colorAccent"
         android:clickable="true"
         android:focusable="true"
         android:minWidth="48dp"
         android:minHeight="48dp"
         android:src="@drawable/ic_add_24dp"
-        app:fabSize="auto"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:backgroundTint="@color/lightThemeColorSecondary"
+        app:layout_constraintBottom_toBottomOf="@+id/fragment_history_rv"
+        app:layout_constraintEnd_toEndOf="@+id/fragment_history_rv"
+        app:shapeAppearanceOverlay="@style/myFABShape" />
 
     <TextView
         android:id="@+id/fragment_history_tv_total"
@@ -43,8 +45,10 @@
         android:layout_weight="2"
         android:gravity="end"
         android:text="@string/history_total"
-        android:textColor="#000"
+        android:textColor="?attr/colorOnBackground"
         android:textSize="14sp"
+        app:autoSizeMinTextSize="14sp"
+        app:autoSizeMaxTextSize="16sp"
         app:layout_constraintBaseline_toBaselineOf="@+id/fragment_history_tv_total_value"
         app:layout_constraintEnd_toStartOf="@+id/fragment_history_tv_total_value" />
 
@@ -56,41 +60,48 @@
         android:layout_marginEnd="8dp"
         android:layout_weight="1"
         android:gravity="center"
-        android:textColor="#000"
+        android:textColor="?attr/colorOnBackground"
         android:textSize="14sp"
+        app:autoSizeMinTextSize="14sp"
+        app:autoSizeMaxTextSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline2"
         tools:text="tymczasowy tekst" />
 
-    <ImageButton
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/fragment_history_ib_filter"
+        style="@style/myOutlinedButton"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginEnd="8dp"
-        android:background="@color/transparent"
-        android:padding="8dp"
-        android:src="@drawable/ic_baseline_date_range_24"
-        android:tint="@color/colorAccent"
+        android:insetLeft="4dp"
+        android:insetTop="4dp"
+        android:insetRight="4dp"
+        android:insetBottom="4dp"
+        app:icon="@drawable/ic_baseline_date_range_24"
         app:layout_constraintBottom_toBottomOf="@+id/fragment_history_button_reset"
         app:layout_constraintEnd_toStartOf="@+id/fragment_history_button_reset"
-        app:layout_constraintTop_toTopOf="@+id/fragment_history_button_reset" />
+        app:layout_constraintTop_toTopOf="@+id/fragment_history_button_reset"
+        app:shapeAppearance="@style/ShapeAppearance.WorkTimeRecorder.SmallComponent.EditFragment" />
 
     <Button
         android:id="@+id/fragment_history_button_reset"
-        style="@style/Widget.AppCompat.Button.ButtonBar.AlertDialog"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/myOutlinedButton"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
-        android:gravity="center"
-        android:minWidth="48dp"
-        android:minHeight="48dp"
-        android:text="@string/history_reset"
-        android:textColor="@color/colorAccent"
+        android:insetLeft="4dp"
+        android:insetTop="4dp"
+        android:insetRight="4dp"
+        android:insetBottom="4dp"
+        app:icon="@drawable/ic_baseline_reset_24"
         app:layout_constraintBottom_toTopOf="@+id/guideline2"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearance="@style/ShapeAppearance.WorkTimeRecorder.SmallComponent.EditFragment" />
+    />
 
 
     <androidx.constraintlayout.widget.Guideline

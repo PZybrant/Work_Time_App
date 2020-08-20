@@ -12,7 +12,7 @@ import java.util.Calendar;
 import java.util.Locale;
 
 @Entity(tableName = "workTimes")
-public class WorkTime {
+public class WorkTimeRecord {
 
     @ColumnInfo(name = "workId")
     @PrimaryKey(autoGenerate = true)
@@ -31,13 +31,15 @@ public class WorkTime {
     @ColumnInfo(name = "finished")
     private boolean mFinished;
 
-    public WorkTime() {
+    public WorkTimeRecord() {
         this.mShiftBegin = Calendar.getInstance(Locale.getDefault());
+        mShiftBegin.set(Calendar.SECOND, 1);
+        mShiftBegin.set(Calendar.MILLISECOND, 1);
         this.mFinished = false;
     }
 
     @Ignore
-    public WorkTime(@NonNull Calendar mShiftBegin, Calendar mShiftEnd, long mWorkTime, boolean mFinished) {
+    public WorkTimeRecord(@NonNull Calendar mShiftBegin, Calendar mShiftEnd, long mWorkTime, boolean mFinished) {
         this.mShiftBegin = mShiftBegin;
         this.mShiftEnd = mShiftEnd;
         this.mWorkTime = mWorkTime;
@@ -70,6 +72,8 @@ public class WorkTime {
 
     public void makeShiftEndTimestamp() {
         this.mShiftEnd = Calendar.getInstance(Locale.getDefault());
+        mShiftEnd.set(Calendar.SECOND, 1);
+        mShiftEnd.set(Calendar.MILLISECOND, 1);
         this.mWorkTime = Support.calculateDifference(this.mShiftBegin.getTimeInMillis(), this.mShiftEnd.getTimeInMillis());
     }
 

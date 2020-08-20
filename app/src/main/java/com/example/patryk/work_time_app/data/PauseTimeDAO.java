@@ -16,32 +16,32 @@ public interface PauseTimeDAO {
     /*Find a way to insert PauseTime with relation to WorkTime*/
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    long insertPauseTime(PauseTime pauseTime);
+    long insertPauseTime(PauseTimeRecord pauseTimeRecord);
 
     @Update
-    int updatePauseTime(PauseTime pauseTime);
+    int updatePauseTime(PauseTimeRecord pauseTimeRecord);
 
     @Delete
-    int deletePauseTime(PauseTime pauseTime);
+    int deletePauseTime(PauseTimeRecord pauseTimeRecord);
 
     @Query("DELETE FROM pauseTimes WHERE workPauseId = :workId")
     int deletePauseTimesWithWorkId(long workId);
 
     @Query("SELECT * FROM pauseTimes")
-    LiveData<List<PauseTime>> getAll();
+    LiveData<List<PauseTimeRecord>> getAll();
 
     @Query("SELECT * FROM pauseTimes WHERE workPauseId = :workId ORDER BY pauseBegin ASC")
-    LiveData<List<PauseTime>> getPauseTimesWithWorkIdLiveData(long workId);
+    LiveData<List<PauseTimeRecord>> getPauseTimesWithWorkIdLiveData(long workId);
 
     @Query("SELECT * FROM pauseTimes WHERE workPauseId = :workId")
-    List<PauseTime> getPauseTimesWithWorkId(long workId);
+    List<PauseTimeRecord> getPauseTimesWithWorkId(long workId);
 
     @Query("SELECT * FROM pauseTimes WHERE pauseId = :id")
-    PauseTime getOne(long id);
+    PauseTimeRecord getOne(long id);
 
     @Query("SELECT * FROM pauseTimes  WHERE pauseEnd < :beginDate ORDER BY pauseEnd DESC LIMIT 1")
-    PauseTime getOneBefore(String beginDate);
+    PauseTimeRecord getOneBefore(String beginDate);
 
     @Query("SELECT * FROM pauseTimes WHERE pauseBegin > :endDate ORDER BY pauseBegin ASC LIMIT 1")
-    PauseTime getOneAfter(String endDate);
+    PauseTimeRecord getOneAfter(String endDate);
 }

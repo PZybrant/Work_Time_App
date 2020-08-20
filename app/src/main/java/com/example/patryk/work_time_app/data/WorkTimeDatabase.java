@@ -1,7 +1,6 @@
 package com.example.patryk.work_time_app.data;
 
 import android.content.Context;
-import android.support.v4.app.INotificationSideChannel;
 
 import androidx.annotation.NonNull;
 import androidx.room.Database;
@@ -13,7 +12,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-@Database(entities = {WorkTime.class, PauseTime.class}, version = 1, exportSchema = false)
+@Database(entities = {WorkTimeRecord.class, PauseTimeRecord.class}, version = 1, exportSchema = false)
 @TypeConverters(value = Converters.class)
 abstract class WorkTimeDatabase extends RoomDatabase {
 

@@ -20,7 +20,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        android:background="@color/backgroundColorTransparent"
         android:minWidth="250dp"
         android:minHeight="250dp">
 
@@ -50,12 +49,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:backgroundTint="@color/colorAccent"
         android:maxHeight="48dp"
         android:minHeight="48dp"
         android:text="@string/dialog_detail_close"
         android:contentDescription="@string/dialog_detail_close_description"
-        android:textColor="@color/colorPrimary"
         android:textSize="14sp" />
 
 </LinearLayout>

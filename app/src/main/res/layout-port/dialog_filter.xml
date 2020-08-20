@@ -2,15 +2,15 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_gravity="center"
-    android:background="@color/backgroundColorTransparent"
     android:gravity="center"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="?attr/background">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/transparent"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -21,7 +21,7 @@
             android:layout_weight="1"
             android:gravity="end"
             android:text="@string/dialog_filter_date_from"
-            android:textColor="#000"
+            android:textColor="?attr/colorOnBackground"
             android:textSize="14sp" />
 
         <TextView
@@ -29,14 +29,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textColor="#000"
+            android:textColor="?attr/colorOnBackground"
             android:textSize="14sp" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/transparent"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -47,7 +46,7 @@
             android:layout_weight="1"
             android:gravity="end"
             android:text="@string/dialog_filter_date_to"
-            android:textColor="#000"
+            android:textColor="?attr/colorOnBackground"
             android:textSize="14sp" />
 
         <TextView
@@ -55,32 +54,37 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:textColor="#000"
+            android:textColor="?attr/colorOnBackground"
             android:textSize="14sp" />
     </LinearLayout>
 
     <CalendarView
         android:id="@+id/dialog_filter_calendar_view"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:showWeekNumber="false"
+
+        android:dateTextAppearance="@style/calendarViewTextAppearance"
+        android:weekDayTextAppearance="@style/calendarViewTextAppearance" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/transparent"
+        android:gravity="center"
         android:orientation="horizontal">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/dialog_filter_button_apply"
-            style="@style/Widget.AppCompat.Button.Borderless.Colored"
-            android:layout_width="0dp"
+            style="@style/myButton"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:backgroundTint="@color/colorAccent"
-            android:text="@string/dialog_filter_apply"
             android:contentDescription="@string/dialog_filter_apply_description"
-            android:textColor="@color/colorPrimary"
-            android:textSize="14sp" />
+            android:insetLeft="6dp"
+            android:insetRight="6dp"
+            android:minWidth="128dp"
+            android:text="@string/dialog_filter_apply"
+            android:textSize="14sp"
+            app:shapeAppearance="@style/ShapeAppearance.WorkTimeRecorder.SmallComponent.TimerFragment" />
 
     </LinearLayout>
 </LinearLayout>

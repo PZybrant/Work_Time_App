@@ -10,13 +10,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.patryk.work_time_app.R;
 import com.example.patryk.work_time_app.Support;
-import com.example.patryk.work_time_app.data.PauseTime;
+import com.example.patryk.work_time_app.data.PauseTimeRecord;
 
 import java.util.List;
 
 public class DetailDialogAdapter extends RecyclerView.Adapter<DetailDialogAdapter.MyViewHolder> {
 
-    private List<PauseTime> mPauseTimes;
+    private List<PauseTimeRecord> mPauseTimeRecords;
 
     @Override
     public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -26,21 +26,21 @@ public class DetailDialogAdapter extends RecyclerView.Adapter<DetailDialogAdapte
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        String concat = Support.convertDateToString(mPauseTimes.get(position).getPauseBegin().getTime()) + " > " + Support.convertDateToString(mPauseTimes.get(position).getPauseEnd().getTime());
+        String concat = Support.convertDateToString(mPauseTimeRecords.get(position).getPauseBegin().getTime()) + " > " + Support.convertDateToString(mPauseTimeRecords.get(position).getPauseEnd().getTime());
         holder.textView.setText(concat);
     }
 
     @Override
     public int getItemCount() {
-        if (mPauseTimes != null) {
-            return mPauseTimes.size();
+        if (mPauseTimeRecords != null) {
+            return mPauseTimeRecords.size();
         } else {
             return 0;
         }
     }
 
-    public void setList(List<PauseTime> pauseTimes) {
-        mPauseTimes = pauseTimes;
+    public void setList(List<PauseTimeRecord> pauseTimeRecords) {
+        mPauseTimeRecords = pauseTimeRecords;
         notifyDataSetChanged();
     }
 

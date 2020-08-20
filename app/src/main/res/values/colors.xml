@@ -1,10 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#F77F42</color>
-    <color name="colorPrimaryDark">#F66B1E</color>
-    <color name="colorAccent">#67BDE6</color>
-    <color name="colorAccentDark">#10364D</color>
-    <color name="transparent">#00FFFFFF</color>
-    <color name="backgroundColor">#F7FDFD</color>
-    <color name="backgroundColorTransparent">#99F7FDFD</color>
+    // colors for light theme
+    <color name="lightThemeColorPrimary">#b0bec5</color>
+    <color name="lightThemeColorPrimaryVariant">#808e95</color>
+    <color name="lightThemeOnPrimary">#000000</color>
+    <color name="lightThemeColorSecondary">#00e5ff</color>
+    <color name="lightThemeColorSecondaryVariant">#00b2cc</color>
+    <color name="lightThemeOnSecondary">#000000</color>
+    <color name="lightThemeBackground">#FFFFFF</color>
+    <color name="lightThemeOnBackground">#000000</color>
+    <color name="lightThemeColorSurface">#EFEFEF</color>
+    <color name="lightThemeOnSurface">#000000</color>
+
+
+    // colors for dark theme
+    <color name="darkThemeColorPrimary">#424242</color>
+    <color name="darkThemeColorPrimaryVariant">#6d6d6d</color>
+    <color name="darkThemeOnPrimary">#FFFFFF</color>
+    <color name="darkThemeColorSecondary">#00e5ff</color>
+    <color name="darkThemeColorSecondaryVariant">#00b2cc</color>
+    <color name="darkThemeOnSecondary">#000000</color>
+    <color name="darkThemeBackground">#1b1b1b</color>
+    <color name="darkThemeOnBackground">#FFFFFF</color>
+    <color name="darkThemeColorSurface">#FF202020</color>
+    <color name="darkThemeOnSurface">#FFFFFF</color>
+
+
+    // others color
+    <color name="red">#ff362f</color>
+    <color name="yellow">#FBF010</color>
+    <color name="green">#00f715</color>
+    <color name="iconColorLight">#FFFFFF</color>
+    <color name="iconColorDark">#000000</color>
+    <color name="progressBarSecond">#6effff</color>
+    <color name="progressBarMinute">#00e5ff</color>
+    <color name="progressBarHour">#00b2cc</color>
+
 </resources>

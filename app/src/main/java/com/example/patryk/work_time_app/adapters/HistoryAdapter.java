@@ -13,20 +13,19 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.patryk.work_time_app.R;
 import com.example.patryk.work_time_app.Support;
-import com.example.patryk.work_time_app.data.WorkTime;
-import com.example.patryk.work_time_app.viewmodels.HistoryFragmentViewModel;
+import com.example.patryk.work_time_app.data.WorkTimeRecord;
 
 import java.util.List;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHolder> {
 
     public interface HistoryAdapterListener {
-        void onLongPressListener(WorkTime mWorkTime);
+        void onLongPressListener(WorkTimeRecord mWorkTimeRecord);
     }
 
     private HistoryAdapterListener mListener;
 
-    private List<WorkTime> timeList;
+    private List<WorkTimeRecord> timeList;
     private Context mContext;
 
     public HistoryAdapter(Context context, HistoryAdapterListener listener) {
@@ -44,11 +43,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
     public void onBindViewHolder(MyViewHolder holder, int position) {
         if (timeList != null) {
             holder.setRowID(timeList.get(position));
-            holder.startDateTextView.setText(Support.convertDateToString(timeList.get(position).getShiftBegin().getTime()));
+            holder.startDateTextView.setText(Support.makeTimeText(timeList.get(position).getShiftBegin()));
             if (timeList.get(position).isFinished()) {
-                holder.stopDateTextView.setText(Support.convertDateToString(timeList.get(position).getShiftEnd().getTime()));
+                holder.stopDateTextView.setText(Support.makeTimeText(timeList.get(position).getShiftEnd()));
                 long timeInMilis = timeList.get(position).getWorkTime();
-                String timeInMilisString = (timeInMilis < 1000) ? "" : Support.convertTimeToString(timeInMilis);
+                String timeInMilisString = (timeInMilis < 1000) ? "00:00" : Support.convertTimeToString(timeInMilis);
                 holder.differenceTextView.setText(timeInMilisString);
             }
         }
@@ -63,18 +62,18 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
         }
     }
 
-    public void setTimes(List<WorkTime> times) {
+    public void setTimes(List<WorkTimeRecord> times) {
         this.timeList = times;
         notifyDataSetChanged();
     }
 
-    public WorkTime getSwipedTime(int pos) {
+    public WorkTimeRecord getSwipedTime(int pos) {
         return timeList.get(pos);
     }
 
-    class MyViewHolder extends RecyclerView.ViewHolder {
+    public class MyViewHolder extends RecyclerView.ViewHolder {
 
-        private WorkTime mWorkTime;
+        private WorkTimeRecord mWorkTimeRecord;
 
         private TextView startDateTextView;
         private TextView stopDateTextView;
@@ -96,15 +95,19 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
             });
         }
 
-        private void setRowID(WorkTime workTime) {
-            this.mWorkTime = workTime;
+        public WorkTimeRecord getWorkTime() {
+            return this.mWorkTimeRecord;
+        }
+
+        private void setRowID(WorkTimeRecord workTimeRecord) {
+            this.mWorkTimeRecord = workTimeRecord;
         }
 
         private class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
 
             @Override
             public void onLongPress(MotionEvent event) {
-                mListener.onLongPressListener(mWorkTime);
+                mListener.onLongPressListener(mWorkTimeRecord);
             }
         }
     }

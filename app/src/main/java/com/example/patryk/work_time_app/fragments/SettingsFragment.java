@@ -85,6 +85,17 @@ public class SettingsFragment extends PreferenceFragmentCompat {
             builder.show();
             return false;
         });
+
+        darkModeSwitch.setOnPreferenceChangeListener((preference, newValue) -> {
+            boolean darkModeOn = (boolean) newValue;
+            if (darkModeOn) {
+                getContext().setTheme(R.style.AppThemeDark);
+            } else {
+                getContext().setTheme(R.style.AppThemeLight);
+            }
+            getActivity().recreate();
+            return true;
+        });
     }
 
     private void init() {

@@ -7,9 +7,9 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.example.patryk.work_time_app.Support;
-import com.example.patryk.work_time_app.data.PauseTime;
+import com.example.patryk.work_time_app.data.PauseTimeRecord;
 import com.example.patryk.work_time_app.data.Repository;
-import com.example.patryk.work_time_app.data.WorkTime;
+import com.example.patryk.work_time_app.data.WorkTimeRecord;
 
 import java.util.Calendar;
 import java.util.List;
@@ -17,73 +17,73 @@ import java.util.List;
 public class EditFragmentViewModel extends AndroidViewModel {
 
     private Repository repository;
-    private LiveData<List<PauseTime>> pauseTimesWithWorkIdLiveData;
-    private List<PauseTime> pauseTimesWithWorkId;
+    private LiveData<List<PauseTimeRecord>> pauseTimesWithWorkIdLiveData;
+    private List<PauseTimeRecord> pauseTimesWithWorkIdRecord;
 
     public EditFragmentViewModel(@NonNull Application application) {
         super(application);
         repository = new Repository(application);
     }
 
-    public int updateWorkTime(WorkTime workTime) {
-        return repository.updateWorkTime(workTime);
+    public int updateWorkTime(WorkTimeRecord workTimeRecord) {
+        return repository.updateWorkTime(workTimeRecord);
     }
 
-    public int deleteWorkTime(WorkTime workTime) {
-        return repository.deleteWorkTime(workTime);
+    public int deleteWorkTime(WorkTimeRecord workTimeRecord) {
+        return repository.deleteWorkTime(workTimeRecord);
     }
 
-    public WorkTime getOneWorkTimeBefore(String d1) {
+    public WorkTimeRecord getOneWorkTimeBefore(String d1) {
         return repository.getOneWorkTimeBefore(d1);
     }
 
-    public WorkTime getOneWorkTimeAfter(String d1) {
+    public WorkTimeRecord getOneWorkTimeAfter(String d1) {
         return repository.getOneWorkTimeAfter(d1);
     }
 
-    public long insertPauseTime(PauseTime pauseTime) {
-        return repository.insertPauseTime(pauseTime);
+    public long insertPauseTime(PauseTimeRecord pauseTimeRecord) {
+        return repository.insertPauseTime(pauseTimeRecord);
     }
 
-    public int updatePauseTime(PauseTime pauseTime) {
-        return repository.updatePauseTime(pauseTime);
+    public int updatePauseTime(PauseTimeRecord pauseTimeRecord) {
+        return repository.updatePauseTime(pauseTimeRecord);
     }
 
-    public LiveData<List<PauseTime>> getPauseTimesWithWorkIdLiveData(long workId) {
+    public LiveData<List<PauseTimeRecord>> getPauseTimesWithWorkIdLiveData(long workId) {
         if (pauseTimesWithWorkIdLiveData == null) {
             pauseTimesWithWorkIdLiveData = repository.getPauseTimesLiveData(workId);
         }
         return pauseTimesWithWorkIdLiveData;
     }
 
-    public List<PauseTime> getPauseTimesWithWorkId(long workId) {
-        pauseTimesWithWorkId = repository.getPauseTimes(workId);
-        return pauseTimesWithWorkId;
+    public List<PauseTimeRecord> getPauseTimesWithWorkId(long workId) {
+        pauseTimesWithWorkIdRecord = repository.getPauseTimes(workId);
+        return pauseTimesWithWorkIdRecord;
     }
 
-    public int deletePauseTime(PauseTime pauseTime) {
-        return repository.deletePauseTime(pauseTime);
+    public int deletePauseTime(PauseTimeRecord pauseTimeRecord) {
+        return repository.deletePauseTime(pauseTimeRecord);
     }
 
-    public PauseTime getOnePauseTimeBefore(String d1) {
+    public PauseTimeRecord getOnePauseTimeBefore(String d1) {
         return repository.getOnePauseTimeBefore(d1);
     }
 
-    public PauseTime getOnePauseTimeAfter(String d1) {
+    public PauseTimeRecord getOnePauseTimeAfter(String d1) {
         return repository.getOnePauseTimeAfter(d1);
     }
 
-    public long recalculateWorkTime(WorkTime workTime) {
+    public long recalculateWorkTime(WorkTimeRecord workTimeRecord) {
         long totalWorkTime;
         long totalPauseTime = 0;
 
-        Calendar shiftBegin = workTime.getShiftBegin();
-        Calendar shiftEnd = workTime.getShiftEnd();
+        Calendar shiftBegin = workTimeRecord.getShiftBegin();
+        Calendar shiftEnd = workTimeRecord.getShiftEnd();
 
         totalWorkTime = Support.calculateDifference(shiftBegin.getTimeInMillis(), shiftEnd.getTimeInMillis());
 
-        List<PauseTime> pauseTimesWithWorkId = getPauseTimesWithWorkId(workTime.getId());
-        for (PauseTime p : pauseTimesWithWorkId) {
+        List<PauseTimeRecord> pauseTimesWithWorkIdRecord = getPauseTimesWithWorkId(workTimeRecord.getId());
+        for (PauseTimeRecord p : pauseTimesWithWorkIdRecord) {
             totalPauseTime += p.getPauseTime();
         }
 

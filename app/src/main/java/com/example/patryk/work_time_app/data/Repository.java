@@ -14,9 +14,9 @@ public class Repository {
 
     private WorkTimeDAO mWorkTimeDAO;
     private PauseTimeDAO mPauseTimeDAO;
-    private WorkTime mWorkTime;
-    private LiveData<List<PauseTime>> mAllPauseTimeList, mPauseTimesWithWorkIdLiveData;
-    private PauseTime mPauseTime;
+    private WorkTimeRecord mWorkTimeRecord;
+    private LiveData<List<PauseTimeRecord>> mAllPauseTimeList, mPauseTimesWithWorkIdLiveData;
+    private PauseTimeRecord mPauseTimeRecord;
     private WorkTimeDatabase db;
 
 
@@ -31,15 +31,15 @@ public class Repository {
         WorkTimeDatabase.databaseExecutor.submit(runnable);
     }
 
-    public long insertWorkTime(WorkTime workTime) {
-        Callable<Long> insertCallable = () -> mWorkTimeDAO.insertWorkTime(workTime);
+    public long insertWorkTime(WorkTimeRecord workTimeRecord) {
+        Callable<Long> insertCallable = () -> mWorkTimeDAO.insertWorkTime(workTimeRecord);
         long rowId = 0;
 
         Future<Long> future = WorkTimeDatabase.databaseExecutor.submit(insertCallable);
 
         try {
             rowId = future.get();
-            workTime.setId(rowId);
+            workTimeRecord.setId(rowId);
         } catch (InterruptedException e1) {
             e1.printStackTrace();
         } catch (ExecutionException e2) {
@@ -48,8 +48,8 @@ public class Repository {
         return rowId;
     }
 
-    public int updateWorkTime(WorkTime workTime) {
-        Callable<Integer> insertCallable = () -> mWorkTimeDAO.updateWorkTime(workTime);
+    public int updateWorkTime(WorkTimeRecord workTimeRecord) {
+        Callable<Integer> insertCallable = () -> mWorkTimeDAO.updateWorkTime(workTimeRecord);
         int rowIUpdated = 0;
 
         Future<Integer> future = WorkTimeDatabase.databaseExecutor.submit(insertCallable);
@@ -64,10 +64,10 @@ public class Repository {
         return rowIUpdated;
     }
 
-    public int deleteWorkTime(WorkTime workTime) {
+    public int deleteWorkTime(WorkTimeRecord workTimeRecord) {
         Callable<Integer> insertCallable = () -> {
-            int workTimeRowDeleted = mWorkTimeDAO.deleteWorkTime(workTime);
-            int pauseTimeRowDeleted = mPauseTimeDAO.deletePauseTimesWithWorkId(workTime.getId());
+            int workTimeRowDeleted = mWorkTimeDAO.deleteWorkTime(workTimeRecord);
+            int pauseTimeRowDeleted = mPauseTimeDAO.deletePauseTimesWithWorkId(workTimeRecord.getId());
             return workTimeRowDeleted + pauseTimeRowDeleted;
         };
 
@@ -85,74 +85,74 @@ public class Repository {
         return rowDeleted;
     }
 
-    public LiveData<List<WorkTime>> getAllWorkTimes() {
+    public LiveData<List<WorkTimeRecord>> getAllWorkTimes() {
 
         return mWorkTimeDAO.getAll();
 
     }
 
-    public WorkTime getOneWorkTime(long id) {
-        Callable<WorkTime> callable = () -> mWorkTimeDAO.getOne(id);
+    public WorkTimeRecord getOneWorkTime(long id) {
+        Callable<WorkTimeRecord> callable = () -> mWorkTimeDAO.getOne(id);
 
-        Future<WorkTime> future = WorkTimeDatabase.databaseExecutor.submit(callable);
+        Future<WorkTimeRecord> future = WorkTimeDatabase.databaseExecutor.submit(callable);
 
         try {
-            mWorkTime = future.get();
+            mWorkTimeRecord = future.get();
         } catch (InterruptedException e1) {
             e1.printStackTrace();
         } catch (ExecutionException e2) {
             e2.printStackTrace();
         }
-        return this.mWorkTime;
+        return this.mWorkTimeRecord;
     }
 
-    public WorkTime getOneWorkTimeBefore(String d1) {
-        Callable<WorkTime> insertCallable = () -> mWorkTimeDAO.getOneBefore(d1);
+    public WorkTimeRecord getOneWorkTimeBefore(String d1) {
+        Callable<WorkTimeRecord> insertCallable = () -> mWorkTimeDAO.getOneBefore(d1);
 
-        Future<WorkTime> future = WorkTimeDatabase.databaseExecutor.submit(insertCallable);
+        Future<WorkTimeRecord> future = WorkTimeDatabase.databaseExecutor.submit(insertCallable);
 
         try {
-            mWorkTime = future.get();
+            mWorkTimeRecord = future.get();
         } catch (InterruptedException e1) {
             e1.printStackTrace();
         } catch (ExecutionException e2) {
             e2.printStackTrace();
         }
-        return this.mWorkTime;
+        return this.mWorkTimeRecord;
     }
 
-    public WorkTime getOneWorkTimeAfter(String d1) {
-        Callable<WorkTime> insertCallable = () -> mWorkTimeDAO.getOneAfter(d1);
+    public WorkTimeRecord getOneWorkTimeAfter(String d1) {
+        Callable<WorkTimeRecord> insertCallable = () -> mWorkTimeDAO.getOneAfter(d1);
 
-        Future<WorkTime> future = WorkTimeDatabase.databaseExecutor.submit(insertCallable);
+        Future<WorkTimeRecord> future = WorkTimeDatabase.databaseExecutor.submit(insertCallable);
 
         try {
-            mWorkTime = future.get();
+            mWorkTimeRecord = future.get();
         } catch (InterruptedException e1) {
             e1.printStackTrace();
         } catch (ExecutionException e2) {
             e2.printStackTrace();
         }
-        return this.mWorkTime;
+        return this.mWorkTimeRecord;
     }
 
-    public LiveData<List<WorkTime>> getWorkWithSpecifiedDateLiveData(String d1, String d2) {
+    public LiveData<List<WorkTimeRecord>> getWorkWithSpecifiedDateLiveData(String d1, String d2) {
         return mWorkTimeDAO.getWorkWithSpecifiedDateLiveData(d1, d2);
     }
 
-    public List<WorkTime> getWorkWithSpecifiedDate(String d1, String d2) {
-        Callable<List<WorkTime>> callable = () -> mWorkTimeDAO.getWorkWithSpecifiedDate(d1, d2);
-        List<WorkTime> workTimeList = new ArrayList<>();
+    public List<WorkTimeRecord> getWorkWithSpecifiedDate(String d1, String d2) {
+        Callable<List<WorkTimeRecord>> callable = () -> mWorkTimeDAO.getWorkWithSpecifiedDate(d1, d2);
+        List<WorkTimeRecord> workTimeRecordList = new ArrayList<>();
 
-        Future<List<WorkTime>> future = WorkTimeDatabase.databaseExecutor.submit(callable);
+        Future<List<WorkTimeRecord>> future = WorkTimeDatabase.databaseExecutor.submit(callable);
         try {
-            workTimeList = future.get();
+            workTimeRecordList = future.get();
         } catch (InterruptedException e1) {
             e1.printStackTrace();
         } catch (ExecutionException e2) {
             e2.printStackTrace();
         }
-        return workTimeList;
+        return workTimeRecordList;
     }
 
     public List<WorkAndPauseTime> getWorkAndPauseTimes() {
@@ -171,15 +171,15 @@ public class Repository {
         return workAndPauseTimeList;
     }
 
-    public long insertPauseTime(PauseTime pauseTime) {
-        Callable<Long> insertCallable = () -> mPauseTimeDAO.insertPauseTime(pauseTime);
+    public long insertPauseTime(PauseTimeRecord pauseTimeRecord) {
+        Callable<Long> insertCallable = () -> mPauseTimeDAO.insertPauseTime(pauseTimeRecord);
         long rowId = 0;
 
         Future<Long> future = WorkTimeDatabase.databaseExecutor.submit(insertCallable);
 
         try {
             rowId = future.get();
-            pauseTime.setId(rowId);
+            pauseTimeRecord.setId(rowId);
         } catch (InterruptedException e1) {
             e1.printStackTrace();
         } catch (ExecutionException e2) {
@@ -188,8 +188,8 @@ public class Repository {
         return rowId;
     }
 
-    public int updatePauseTime(PauseTime pauseTime) {
-        Callable<Integer> insertCallable = () -> mPauseTimeDAO.updatePauseTime(pauseTime);
+    public int updatePauseTime(PauseTimeRecord pauseTimeRecord) {
+        Callable<Integer> insertCallable = () -> mPauseTimeDAO.updatePauseTime(pauseTimeRecord);
         int rowUpdated = 0;
 
         Future<Integer> future = WorkTimeDatabase.databaseExecutor.submit(insertCallable);
@@ -204,8 +204,8 @@ public class Repository {
         return rowUpdated;
     }
 
-    public int deletePauseTime(PauseTime pauseTime) {
-        Callable<Integer> insertCallable = () -> mPauseTimeDAO.deletePauseTime(pauseTime);
+    public int deletePauseTime(PauseTimeRecord pauseTimeRecord) {
+        Callable<Integer> insertCallable = () -> mPauseTimeDAO.deletePauseTime(pauseTimeRecord);
         int rowDeleted = 0;
 
         Future<Integer> future = WorkTimeDatabase.databaseExecutor.submit(insertCallable);
@@ -236,75 +236,75 @@ public class Repository {
         return rowDeleted;
     }
 
-    public LiveData<List<PauseTime>> getAllPauseTimes() {
+    public LiveData<List<PauseTimeRecord>> getAllPauseTimes() {
         this.mAllPauseTimeList = mPauseTimeDAO.getAll();
         return this.mAllPauseTimeList;
     }
 
-    public LiveData<List<PauseTime>> getPauseTimesLiveData(long workId) {
+    public LiveData<List<PauseTimeRecord>> getPauseTimesLiveData(long workId) {
         mPauseTimesWithWorkIdLiveData = mPauseTimeDAO.getPauseTimesWithWorkIdLiveData(workId);
         return mPauseTimesWithWorkIdLiveData;
     }
 
-    public List<PauseTime> getPauseTimes(long workId) {
-        Callable<List<PauseTime>> callable = () -> mPauseTimeDAO.getPauseTimesWithWorkId(workId);
-        List<PauseTime> pauseTimes = null;
+    public List<PauseTimeRecord> getPauseTimes(long workId) {
+        Callable<List<PauseTimeRecord>> callable = () -> mPauseTimeDAO.getPauseTimesWithWorkId(workId);
+        List<PauseTimeRecord> pauseTimeRecords = null;
 
-        Future<List<PauseTime>> future = WorkTimeDatabase.databaseExecutor.submit(callable);
+        Future<List<PauseTimeRecord>> future = WorkTimeDatabase.databaseExecutor.submit(callable);
 
         try {
-            pauseTimes = future.get();
+            pauseTimeRecords = future.get();
         } catch (InterruptedException e1) {
             e1.printStackTrace();
         } catch (ExecutionException e2) {
             e2.printStackTrace();
         }
-        return pauseTimes;
+        return pauseTimeRecords;
     }
 
-    public PauseTime getOnePauseTime(long id) {
-        Callable<PauseTime> insertCallable = () -> mPauseTimeDAO.getOne(id);
+    public PauseTimeRecord getOnePauseTime(long id) {
+        Callable<PauseTimeRecord> insertCallable = () -> mPauseTimeDAO.getOne(id);
 
-        Future<PauseTime> future = WorkTimeDatabase.databaseExecutor.submit(insertCallable);
+        Future<PauseTimeRecord> future = WorkTimeDatabase.databaseExecutor.submit(insertCallable);
 
         try {
-            mPauseTime = future.get();
+            mPauseTimeRecord = future.get();
         } catch (InterruptedException e1) {
             e1.printStackTrace();
         } catch (ExecutionException e2) {
             e2.printStackTrace();
         }
-        return this.mPauseTime;
+        return this.mPauseTimeRecord;
     }
 
-    public PauseTime getOnePauseTimeBefore(String d1) {
-        Callable<PauseTime> insertCallable = () -> mPauseTimeDAO.getOneBefore(d1);
+    public PauseTimeRecord getOnePauseTimeBefore(String d1) {
+        Callable<PauseTimeRecord> insertCallable = () -> mPauseTimeDAO.getOneBefore(d1);
 
-        Future<PauseTime> future = WorkTimeDatabase.databaseExecutor.submit(insertCallable);
+        Future<PauseTimeRecord> future = WorkTimeDatabase.databaseExecutor.submit(insertCallable);
 
         try {
-            mPauseTime = future.get();
+            mPauseTimeRecord = future.get();
         } catch (InterruptedException e1) {
             e1.printStackTrace();
         } catch (ExecutionException e2) {
             e2.printStackTrace();
         }
-        return this.mPauseTime;
+        return this.mPauseTimeRecord;
     }
 
-    public PauseTime getOnePauseTimeAfter(String d1) {
-        Callable<PauseTime> insertCallable = () -> mPauseTimeDAO.getOneAfter(d1);
+    public PauseTimeRecord getOnePauseTimeAfter(String d1) {
+        Callable<PauseTimeRecord> insertCallable = () -> mPauseTimeDAO.getOneAfter(d1);
 
-        Future<PauseTime> future = WorkTimeDatabase.databaseExecutor.submit(insertCallable);
+        Future<PauseTimeRecord> future = WorkTimeDatabase.databaseExecutor.submit(insertCallable);
 
         try {
-            mPauseTime = future.get();
+            mPauseTimeRecord = future.get();
         } catch (InterruptedException e1) {
             e1.printStackTrace();
         } catch (ExecutionException e2) {
             e2.printStackTrace();
         }
-        return this.mPauseTime;
+        return this.mPauseTimeRecord;
     }
 
 }

@@ -15,34 +15,34 @@ import java.util.List;
 public interface WorkTimeDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    long insertWorkTime(WorkTime workTime);
+    long insertWorkTime(WorkTimeRecord workTimeRecord);
 
-    @Update(entity = WorkTime.class, onConflict = OnConflictStrategy.REPLACE)
-    int updateWorkTime(WorkTime workTime);
-
-    @Delete
-    int deleteWorkTime(WorkTime workTime);
+    @Update(entity = WorkTimeRecord.class, onConflict = OnConflictStrategy.REPLACE)
+    int updateWorkTime(WorkTimeRecord workTimeRecord);
 
     @Delete
-    int deleteWorkTime(WorkTime workTime, List<PauseTime> pauseTimes);
+    int deleteWorkTime(WorkTimeRecord workTimeRecord);
+
+    @Delete
+    int deleteWorkTime(WorkTimeRecord workTimeRecord, List<PauseTimeRecord> pauseTimeRecords);
 
     @Query("SELECT * FROM workTimes ORDER BY shiftBegin ASC")
-    LiveData<List<WorkTime>> getAll();
+    LiveData<List<WorkTimeRecord>> getAll();
 
     @Query("SELECT * FROM workTimes WHERE workId = :id")
-    WorkTime getOne(long id);
+    WorkTimeRecord getOne(long id);
 
     @Query("SELECT * FROM workTimes  WHERE shiftEnd < :beginDate ORDER BY shiftEnd DESC LIMIT 1")
-    WorkTime getOneBefore(String beginDate);
+    WorkTimeRecord getOneBefore(String beginDate);
 
     @Query("SELECT * FROM workTimes WHERE shiftBegin > :endDate ORDER BY shiftBegin ASC LIMIT 1")
-    WorkTime getOneAfter(String endDate);
+    WorkTimeRecord getOneAfter(String endDate);
 
     @Query("SELECT * FROM workTimes WHERE shiftBegin >= :d1 AND shiftBegin <= :d2 AND shiftEnd >= :d1 AND shiftEnd <= :d2 ORDER BY shiftBegin ASC")
-    LiveData<List<WorkTime>> getWorkWithSpecifiedDateLiveData(String d1, String d2);
+    LiveData<List<WorkTimeRecord>> getWorkWithSpecifiedDateLiveData(String d1, String d2);
 
     @Query("SELECT * FROM workTimes WHERE shiftBegin >= :d1 AND shiftBegin <= :d2 AND shiftEnd >= :d1 AND shiftEnd <= :d2 ORDER BY shiftBegin ASC")
-    List<WorkTime> getWorkWithSpecifiedDate(String d1, String d2);
+    List<WorkTimeRecord> getWorkWithSpecifiedDate(String d1, String d2);
 
     @Transaction
     @Query("SELECT * FROM workTimes")
