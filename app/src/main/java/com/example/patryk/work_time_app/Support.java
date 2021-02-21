@@ -28,7 +28,7 @@ public abstract class Support {
     public static String convertDateToString(Date date) {
         try {
 
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault());
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
             return dateFormat.format(date);
 
         } catch (Exception e) {

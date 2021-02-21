@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatButton;
-import androidx.appcompat.widget.AppCompatImageButton;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -33,6 +32,8 @@ import com.example.patryk.work_time_app.viewmodels.HistoryFragmentViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 public class HistoryFragment extends Fragment {
@@ -42,6 +43,7 @@ public class HistoryFragment extends Fragment {
     private int dir;
     private boolean isSwipeRight = false;
     private boolean isSwipeLeft = false;
+    private int[] headersArray;
     private TextView totalTimeTextView;
     private HistoryAdapter historyAdapter;
     private HistoryFragmentViewModel viewModel;
@@ -77,7 +79,8 @@ public class HistoryFragment extends Fragment {
 
 
         viewModel.getWorkTimeRecordRecordList().observe(getViewLifecycleOwner(), list -> {
-            historyAdapter.setTimes(list);
+            populateHeadersArray(list);
+            historyAdapter.setTimes(list, headersArray);
             long totalWorkTime = 0;
             for (WorkTimeRecord wt : list) {
                 totalWorkTime += wt.getWorkTime();
@@ -95,7 +98,8 @@ public class HistoryFragment extends Fragment {
         });
 
         resetButton.setOnClickListener(v -> viewModel.getWorkTimeRecordRecordList().observe(getViewLifecycleOwner(), list -> {
-            historyAdapter.setTimes(list);
+            populateHeadersArray(list);
+            historyAdapter.setTimes(list, headersArray);
             long totalWorkTime = 0;
             for (WorkTimeRecord wt : list) {
                 totalWorkTime += wt.getWorkTime();
@@ -123,7 +127,8 @@ public class HistoryFragment extends Fragment {
         String fDate = dateFormat.format(date1.getTime());
         String tDate = dateFormat.format(date2.getTime());
         viewModel.setTimeRecordListWithSpecifiedDate(fDate, tDate).observe(this, list -> {
-            historyAdapter.setTimes(list);
+            populateHeadersArray(list);
+            historyAdapter.setTimes(list, headersArray);
             long totalWorkTime = 0;
             for (WorkTimeRecord wt : list) {
                 totalWorkTime += wt.getWorkTime();
@@ -268,5 +273,39 @@ public class HistoryFragment extends Fragment {
     private void clearCanvas(Canvas c, float left, float top, float right, float bottom) {
         p.setColor(Color.TRANSPARENT);
         c.drawRect(left, top, right, bottom, p);
+    }
+
+    private void populateHeadersArray(List<WorkTimeRecord> list) {
+        headersArray = null;
+        headersArray = new int[list.size()];
+
+        Calendar separatorDate = null;
+        for (int i = 0; i < list.size(); i++) {
+            if (separatorDate == null) {
+                separatorDate = Calendar.getInstance();
+                separatorDate.setTimeInMillis(list.get(i).getShiftBegin().getTimeInMillis());
+                separatorDate.set(Calendar.HOUR_OF_DAY, 0);
+                separatorDate.set(Calendar.MINUTE, 0);
+                separatorDate.set(Calendar.SECOND, 0);
+                separatorDate.set(Calendar.MILLISECOND, 0);
+                // put WorkTimeRecord and value for header: 0 if true & 1 if false
+                headersArray[i] = 0;
+            } else {
+                Calendar date = Calendar.getInstance();
+                date.setTimeInMillis(list.get(i).getShiftBegin().getTimeInMillis());
+                date.set(Calendar.HOUR_OF_DAY, 0);
+                date.set(Calendar.MINUTE, 0);
+                date.set(Calendar.SECOND, 0);
+                date.set(Calendar.MILLISECOND, 0);
+                if (date.compareTo(separatorDate) == 0) {
+                    // put WorkTimeRecord and value for header: 0 if true & 1 if false
+                    headersArray[i] = 1;
+                } else {
+                    separatorDate.setTimeInMillis(date.getTimeInMillis());
+                    // put WorkTimeRecord and value for header: 0 if true & 1 if false
+                    headersArray[i] = 0;
+                }
+            }
+        }
     }
 }

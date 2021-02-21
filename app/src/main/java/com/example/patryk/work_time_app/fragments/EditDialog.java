@@ -51,8 +51,11 @@ public class EditDialog extends DialogFragment {
             actualDate.setTime(workTimeRecord.getShiftEnd().getTime());
             dateBefore = workTimeRecord.getShiftBegin();
             WorkTimeRecord workTimeRecordAfter = viewModel.getOneWorkTimeAfter(Support.convertDateToString(workTimeRecord.getShiftEnd().getTime()));
+            System.out.println(workTimeRecordAfter);
             if (workTimeRecordAfter != null) {
                 dateAfter = workTimeRecordAfter.getShiftBegin();
+            } else {
+                dateAfter = null;
             }
         }
     }
@@ -163,14 +166,18 @@ public class EditDialog extends DialogFragment {
 
     private void compareDates(Calendar cal) {
         if (dateBefore != null && dateAfter != null) {
-            if (cal.compareTo(dateBefore) > 0 && cal.compareTo(dateAfter) < 0) {
+            System.out.println(cal.compareTo(dateAfter) + " / " + cal.compareTo(dateBefore));
+//             actualInMillis < afterInMillis && actualInMillis > beforeInMillis
+            if (cal.compareTo(dateAfter) < 0 && cal.compareTo(dateBefore) > 0) {
                 buttonApply.setEnabled(true);
                 buttonApply.setTextColor(getResources().getColor(R.color.lightThemeColorPrimary, null));
             } else {
                 buttonApply.setEnabled(false);
                 buttonApply.setTextColor(Color.GRAY);
             }
-        } else if (dateBefore != null) {
+        } else if (dateAfter == null) {
+//            long beforeInMillis = dateBefore.getTimeInMillis();
+//             actualInMillis > beforeInMillis
             if (cal.compareTo(dateBefore) > 0) {
                 buttonApply.setEnabled(true);
                 buttonApply.setTextColor(getResources().getColor(R.color.lightThemeColorPrimary, null));
@@ -178,7 +185,9 @@ public class EditDialog extends DialogFragment {
                 buttonApply.setEnabled(false);
                 buttonApply.setTextColor(Color.GRAY);
             }
-        } else if (dateAfter != null) {
+        } else {
+//            long afterInMillis = dateAfter.getTimeInMillis();
+//             actualInMillis < afterInMillis
             if (cal.compareTo(dateAfter) < 0) {
                 buttonApply.setEnabled(true);
                 buttonApply.setTextColor(getResources().getColor(R.color.lightThemeColorPrimary, null));

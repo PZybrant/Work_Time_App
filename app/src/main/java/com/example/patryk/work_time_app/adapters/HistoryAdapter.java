@@ -15,6 +15,8 @@ import com.example.patryk.work_time_app.R;
 import com.example.patryk.work_time_app.Support;
 import com.example.patryk.work_time_app.data.WorkTimeRecord;
 
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHolder> {
@@ -23,10 +25,16 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
         void onLongPressListener(WorkTimeRecord mWorkTimeRecord);
     }
 
+    private static final int TYPE_HEADER = 0;
+    private static final int TYPE_ITEM = 1;
+
     private HistoryAdapterListener mListener;
 
     private List<WorkTimeRecord> timeList;
+    private int[] headersMap;
     private Context mContext;
+    private Calendar separatorDate;
+    int x = 1;
 
     public HistoryAdapter(Context context, HistoryAdapterListener listener) {
         this.mListener = listener;
@@ -62,9 +70,14 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
         }
     }
 
-    public void setTimes(List<WorkTimeRecord> times) {
+    public void setTimes(List<WorkTimeRecord> times, int[] headersMap) {
         this.timeList = times;
+        this.headersMap = headersMap;
         notifyDataSetChanged();
+    }
+
+    public int isHeader(int pos) {
+        return headersMap[pos];
     }
 
     public WorkTimeRecord getSwipedTime(int pos) {
@@ -108,6 +121,12 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.MyViewHo
             @Override
             public void onLongPress(MotionEvent event) {
                 mListener.onLongPressListener(mWorkTimeRecord);
+            }
+
+            @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                System.out.println(x);
+                return super.onSingleTapUp(e);
             }
         }
     }

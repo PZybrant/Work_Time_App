@@ -47,7 +47,6 @@ public class AddDialog extends DialogFragment {
         DatePicker datePicker = view.findViewById(R.id.dialog_edit_picker_date);
         NumberPicker hourPicker = view.findViewById(R.id.dialog_edit_picker_hour);
         NumberPicker minutePicker = view.findViewById(R.id.dialog_edit_picker_minute);
-//        NumberPicker secondPicker = view.findViewById(R.id.dialog_edit_picker_second);
         Button cancelButton = view.findViewById(R.id.dialog_edit_button_cancel);
         applyButton = view.findViewById(R.id.dialog_edit_button_apply);
 
@@ -55,8 +54,6 @@ public class AddDialog extends DialogFragment {
         hourPicker.setMaxValue(23);
         minutePicker.setMinValue(0);
         minutePicker.setMaxValue(59);
-//        secondPicker.setMinValue(0);
-//        secondPicker.setMaxValue(59);
 
 
         rangeFrom = Calendar.getInstance();
@@ -77,7 +74,6 @@ public class AddDialog extends DialogFragment {
         datePicker.init(newTime.get(Calendar.YEAR), newTime.get(Calendar.MONTH), newTime.get(Calendar.DAY_OF_MONTH), onDateChangedListener);
         hourPicker.setValue(newTime.get(Calendar.HOUR_OF_DAY));
         minutePicker.setValue(newTime.get(Calendar.MINUTE));
-//        secondPicker.setValue(newTime.get(Calendar.SECOND));
 
         hourPicker.setOnValueChangedListener((picker, oldVal, newVal) -> {
             newTime.set(Calendar.HOUR_OF_DAY, newVal);
@@ -90,12 +86,6 @@ public class AddDialog extends DialogFragment {
             canBeCreated = historyViewModel.canBeCreated(newTime, specifiedWorkTimeRecordRecordList);
             enableApplyButton(canBeCreated);
         });
-
-//        secondPicker.setOnValueChangedListener((picker, oldVal, newVal) -> {
-//            newTime.set(Calendar.SECOND, newVal);
-//            canBeCreated = historyViewModel.canBeCreated(newTime, specifiedWorkTimeRecordList);
-//            enableApplyButton(canBeCreated);
-//        });
 
         cancelButton.setOnClickListener(v -> dismiss());
 

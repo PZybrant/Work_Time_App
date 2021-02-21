@@ -33,8 +33,6 @@ public class WorkTimeRecord {
 
     public WorkTimeRecord() {
         this.mShiftBegin = Calendar.getInstance(Locale.getDefault());
-        mShiftBegin.set(Calendar.SECOND, 1);
-        mShiftBegin.set(Calendar.MILLISECOND, 1);
         this.mFinished = false;
     }
 
@@ -72,8 +70,6 @@ public class WorkTimeRecord {
 
     public void makeShiftEndTimestamp() {
         this.mShiftEnd = Calendar.getInstance(Locale.getDefault());
-        mShiftEnd.set(Calendar.SECOND, 1);
-        mShiftEnd.set(Calendar.MILLISECOND, 1);
         this.mWorkTime = Support.calculateDifference(this.mShiftBegin.getTimeInMillis(), this.mShiftEnd.getTimeInMillis());
     }
 

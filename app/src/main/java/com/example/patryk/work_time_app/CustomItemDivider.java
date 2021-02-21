@@ -39,39 +39,25 @@ public class CustomItemDivider extends RecyclerView.ItemDecoration {
         p.setColor(color);
     }
 
+    private Calendar separatorDate = null;
+    private HistoryAdapter adapter;
+
     @Override
     public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull RecyclerView.State state) {
         super.getItemOffsets(outRect, view, parent, state);
-
-        Calendar separatorDate = null;
-        for (int i = 0; i < parent.getChildCount(); i++) {
-            View itemView = parent.getChildAt(i);
-            HistoryAdapter.MyViewHolder childViewHolder = (HistoryAdapter.MyViewHolder) parent.getChildViewHolder(itemView);
-
-            if (separatorDate == null) {
-                separatorDate = Calendar.getInstance();
-                separatorDate.setTimeInMillis(childViewHolder.getWorkTime().getShiftBegin().getTimeInMillis());
-                separatorDate.set(Calendar.HOUR_OF_DAY, 0);
-                separatorDate.set(Calendar.MINUTE, 0);
-                separatorDate.set(Calendar.SECOND, 0);
-                separatorDate.set(Calendar.MILLISECOND, 0);
-                outRect.set(30, 90, 30, 0);
-            } else {
-                Calendar date = Calendar.getInstance();
-                date.setTimeInMillis(childViewHolder.getWorkTime().getShiftBegin().getTimeInMillis());
-                date.set(Calendar.HOUR_OF_DAY, 0);
-                date.set(Calendar.MINUTE, 0);
-                date.set(Calendar.SECOND, 0);
-                date.set(Calendar.MILLISECOND, 0);
-                if (date.after(separatorDate)) {
-                    separatorDate.setTimeInMillis(childViewHolder.getWorkTime().getShiftBegin().getTimeInMillis());
-                    outRect.set(30, 90, 30, 0);
-                } else {
-                    outRect.set(30, 5, 30, 5);
-                }
-            }
+        if (adapter == null) {
+            adapter = (HistoryAdapter) parent.getAdapter();
         }
-        separatorDate = null;
+
+        HistoryAdapter.MyViewHolder childViewHolder = (HistoryAdapter.MyViewHolder) parent.getChildViewHolder(view);
+
+        int isHeader = adapter.isHeader(childViewHolder.getAdapterPosition());
+
+        if (isHeader == 0) {
+            outRect.set(30, 90, 30, 0);
+        } else {
+            outRect.set(30, 5, 30, 5);
+        }
     }
 
     @Override
@@ -81,10 +67,14 @@ public class CustomItemDivider extends RecyclerView.ItemDecoration {
         int left = parent.getPaddingLeft();
         int right = parent.getWidth() - parent.getPaddingRight();
 
+
         Calendar separatorDate = null;
         for (int i = 0; i < parent.getChildCount(); i++) {
             View itemView = parent.getChildAt(i);
             HistoryAdapter.MyViewHolder childViewHolder = (HistoryAdapter.MyViewHolder) parent.getChildViewHolder(itemView);
+
+            HistoryAdapter adapter = (HistoryAdapter) parent.getAdapter();
+            int isHeader = adapter.isHeader(childViewHolder.getAdapterPosition());
 
             int top = itemView.getTop() - ((RecyclerView.LayoutParams) itemView.getLayoutParams()).topMargin - 10;
             int bottom = top + divider.getIntrinsicHeight();
@@ -93,43 +83,20 @@ public class CustomItemDivider extends RecyclerView.ItemDecoration {
             divider.setTint(color);
             p.setTextSize(40);
 
-            if (separatorDate == null) {
+            if (isHeader == 0) {
                 separatorDate = Calendar.getInstance();
                 separatorDate.setTimeInMillis(childViewHolder.getWorkTime().getShiftBegin().getTimeInMillis());
-                separatorDate.set(Calendar.HOUR_OF_DAY, 0);
-                separatorDate.set(Calendar.MINUTE, 0);
-                separatorDate.set(Calendar.SECOND, 0);
-                separatorDate.set(Calendar.MILLISECOND, 0);
                 String dateText = makeDateText(separatorDate);
                 c.drawText(dateText, itemView.getLeft(), itemView.getTop() - p.getTextSize(), p);
                 divider.draw(c);
-            } else {
-                Calendar date = Calendar.getInstance();
-                date.setTimeInMillis(childViewHolder.getWorkTime().getShiftBegin().getTimeInMillis());
-                date.set(Calendar.HOUR_OF_DAY, 0);
-                date.set(Calendar.MINUTE, 0);
-                date.set(Calendar.SECOND, 0);
-                date.set(Calendar.MILLISECOND, 0);
-                if (date.after(separatorDate)) {
-                    separatorDate.setTimeInMillis(childViewHolder.getWorkTime().getShiftBegin().getTimeInMillis());
-                    String dateText = makeDateText(separatorDate);
-                    c.drawText(dateText, itemView.getLeft(), itemView.getTop() - p.getTextSize(), p);
-
-                    divider.draw(c);
-                }
             }
         }
-        separatorDate = null;
-
-
     }
 
     private static String makeDateText(Calendar calendar) {
         try {
-
             SimpleDateFormat dateFormat = new SimpleDateFormat("LLLL dd, EEEE", Locale.getDefault());
             return dateFormat.format(calendar.getTime());
-
         } catch (Exception e) {
             e.printStackTrace();
 
