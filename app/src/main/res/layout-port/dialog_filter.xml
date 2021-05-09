@@ -64,8 +64,9 @@
         android:layout_height="wrap_content"
         android:showWeekNumber="false"
 
-        android:dateTextAppearance="@style/calendarViewTextAppearance"
-        android:weekDayTextAppearance="@style/calendarViewTextAppearance" />
+        android:theme="@style/CalenderViewCustom"
+        android:dateTextAppearance="@style/CalenderViewDateCustomText"
+        android:weekDayTextAppearance="@style/CalenderViewWeekCustomText" />
 
     <LinearLayout
         android:layout_width="match_parent"

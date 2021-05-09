@@ -35,5 +35,6 @@
     <color name="progressBarSecond">#6effff</color>
     <color name="progressBarMinute">#00e5ff</color>
     <color name="progressBarHour">#00b2cc</color>
+    <color name="textColor">#000000</color>
 
 </resources>
